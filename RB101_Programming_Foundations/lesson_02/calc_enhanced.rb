@@ -1,6 +1,13 @@
 require 'pry'
 require 'yaml'
 MESSAGES = YAML.load_file('/home/clh/Launch_School_courses/RB101_Programming_Foundations/lesson_02/calc_messages.yml')
+# 'en' for english, 'es' for spanish
+# not fully realized for spanish, but you get the idea
+LANG = 'es'
+
+def messages(string, lang = LANG)
+  MESSAGES[lang][string]
+end
 
 def prompt(message)
   puts("=> #{message}")
@@ -14,56 +21,56 @@ end
 def operator_to_message(op)
   result =  case op
             when '1'
-              MESSAGES['adding']
+              messages('adding')
             when '2'
-              MESSAGES['subtracting']
+              messages('subtracting')
             when '3'
-              MESSAGES['multiplying']
+              messages('multiplying')
             when '4'
-              MESSAGES['dividing']
+              messages('dividing')
             end
   result
 end
 
-prompt(MESSAGES['welcome'])
+prompt(messages('welcome'))
 
 name = ''
 loop do
   name = gets().chomp()
 
   if name.empty?()
-    prompt(MESSAGES['enter_name'])
+    prompt(messages('enter_name'))
   else
     break
   end
 end
 
-prompt(MESSAGES['greetings'] + "#{name}.")
+prompt(messages('greetings') + "#{name}.")
 
 loop do
   number1 = ''
   loop do
-    prompt(MESSAGES['first_number'])
+    prompt(messages('first_number'))
     number1 = gets().chomp()
 
     if valid_number?(number1)
       number1 = number1.to_f
       break
     else
-      prompt(MESSAGES['invalid_number'])
+      prompt(messages('invalid_number'))
     end
   end
 
   number2 = ''
   loop do
-    prompt(MESSAGES['second_number'])
+    prompt(messages('second_number'))
     number2 = gets().chomp()
 
     if valid_number?(number2)
       number2 = number2.to_f
       break
     else
-      prompt(MESSAGES['invalid_number'])
+      prompt(messages('invalid_number'))
     end
   end
 
@@ -74,7 +81,7 @@ loop do
   #   3) multiply
   #   4) divide
   # MSG
-  prompt(MESSAGES['operator_prompt'])
+  prompt(messages('operator_prompt'))
 
   operator = ''
   loop do
@@ -83,11 +90,11 @@ loop do
     if %w(1 2 3 4).include?(operator)
       break
     else
-      prompt(MESSAGES['invalid_operator'])
+      prompt(messages('invalid_operator'))
     end
   end
 
-  prompt("#{operator_to_message(operator)} #{MESSAGES['working']}")
+  prompt("#{operator_to_message(operator)} #{messages('working')}")
 
   result =  case operator
             when '1'
@@ -100,11 +107,11 @@ loop do
               number1 / number2
             end
 
-  prompt(MESSAGES['result'] + result.to_s)
+  prompt(messages('result') + result.to_s)
 
-  prompt(MESSAGES['another_calc'])
+  prompt(messages('another_calc'))
   answer = gets().chomp()
   break unless answer.downcase().start_with?('y')
 end
 
-prompt(MESSAGES['thanks'])
+prompt(messages('thanks'))

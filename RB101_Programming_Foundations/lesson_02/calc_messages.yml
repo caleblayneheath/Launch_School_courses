@@ -1,20 +1,42 @@
-welcome: "Welcome to Calculator! Enter your name:"
-enter_name: "Enter your name."
-greetings: "Hello "
-first_number: "What's the first number?"
-second_number: "What's the second number?"
-invalid_number: "Not a valid number."
-operator_prompt: "What's the operation? \n
-    1) add\n
-    2) subtract\n
-    3) multiply\n
-    4) divide"
-invalid_operator: "Not a valid operator."
-adding: "Adding"
-subtracting: "Subtracting"
-multiplying: "Multiplying"
-dividing: "Dividing"
-working: "the two numbers..."
-result: "The result is "
-another_calc: "Do you want to perfom another calculation? (Y/N)"
-thanks: "Thank you for using Calculator. Goodbye."
+en:
+    welcome: "Welcome to Calculator! Enter your name:"
+    enter_name: "Enter your name."
+    greetings: "Hello "
+    first_number: "What's the first number?"
+    second_number: "What's the second number?"
+    invalid_number: "Not a valid number."
+    operator_prompt: "What's the operation? \n
+        1) add\n
+        2) subtract\n
+        3) multiply\n
+        4) divide"
+    invalid_operator: "Not a valid operator."
+    adding: "Adding"
+    subtracting: "Subtracting"
+    multiplying: "Multiplying"
+    dividing: "Dividing"
+    working: "the two numbers..."
+    result: "The result is "
+    another_calc: "Do you want to perfom another calculation? (Y/N)"
+    thanks: "Thank you for using Calculator. Goodbye."
+es:
+    welcome: "Bienvenido a la calculadora! Introduzca su nombre:"
+    enter_name: "Introduzca su nombre."
+    greetings: "Hola "
+    first_number: "¿Cuál es el primer número?"
+    second_number: "¿Cuál es el segundo número?"
+    invalid_number: "Not a valid number."
+    operator_prompt: "What's the operation? \n
+        1) add\n
+        2) subtract\n
+        3) multiply\n
+        4) divide"
+    invalid_operator: "Not a valid operator."
+    adding: "Adding"
+    subtracting: "Subtracting"
+    multiplying: "Multiplying"
+    dividing: "Dividing"
+    working: "the two numbers..."
+    result: "The result is "
+    another_calc: "Do you want to perfom another calculation? (Y/N)"
+    thanks: "Thank you for using Calculator. Goodbye."
