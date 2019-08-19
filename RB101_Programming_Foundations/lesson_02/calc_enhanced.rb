@@ -1,6 +1,5 @@
-require 'pry'
 require 'yaml'
-MESSAGES = YAML.load_file('/home/clh/Launch_School_courses/RB101_Programming_Foundations/lesson_02/calc_messages.yml')
+MESSAGES = YAML.load_file('calc_messages.yml')
 # 'en' for english, 'es' for spanish
 # not fully realized for spanish, but you get the idea
 LANG = 'es'

@@ -1,0 +1,11 @@
+en:
+  welcome: 'Welcome to Loan Calculator!'
+  enter_loan: 'Please enter the loan amount in $.'
+  invalid_loan: 'Not a valid loan amount.'
+  enter_apr: 'Please enter the loan APR in %.'
+  invalid_apr: 'Not a valid APR amount.'
+  enter_period: 'Please enter the loan period in months.'
+  invalid_period: 'Not a valid loan period.'
+  payment_is: 'Your monthly payment is $'
+  another_calc: "Another calculation? (Type 'y' for yes, or anything else to quit.)"
+  thanks: 'Thank you for using Loan Calculator. Goodbye.'
