@@ -8,6 +8,7 @@ end
 
 def display_board(brd)
   system 'clear'
+  puts "You're a #{PLAYER_MARKER}. Computer is a #{COMPUTER_MARKER}"
   puts ""
   puts " #{brd[1]} | #{brd[2]} | #{brd[3]} "
   puts "---|---|---"
@@ -57,47 +58,44 @@ def detect_winner(brd)
                   [[1, 5, 9], [3, 5, 7]]
 
   winning_lines.each do |line|
-    line.all?(PLAYER_MARKER)
+    if brd[line[0]] == PLAYER_MARKER &&
+       brd[line[1]] == PLAYER_MARKER &&
+       brd[line[2]] == PLAYER_MARKER
+       return 'Player'
+    elsif
+      brd[line[0]] == COMPUTER_MARKER &&
+      brd[line[1]] == COMPUTER_MARKER &&
+      brd[line[2]] == COMPUTER_MARKER
+      return 'Computer'
+    end
   end
+  nil
 end
-
-board = initalize_board
-display_board(board)
 
 loop do
-  player_places_piece!(board)
-  computer_places_piece!(board)
+  board = initalize_board
+
+  loop do
+    display_board(board)
+    
+    player_places_piece!(board)
+    break if someone_won?(board) || board_full?(board)
+    
+    computer_places_piece!(board)
+    break if someone_won?(board) || board_full?(board)
+  end
+
   display_board(board)
-  break if someone_won?(board) || board_full?(board)
+
+  if someone_won?(board)
+    prompt "#{detect_winner(board)} won!"
+  else
+    prompt "It's a tie!"
+  end
+
+  prompt "Play again? (y or n)"
+  answer = gets.chomp
+  break unless answer.downcase.start_with?('y')
 end
-  
-if someone_won?(board)
-  prompt "#{detect_winner(board)} won!"
-else
-  prompt "It's a tie!"
-end
-  
-#   while true # game_status == unresolved
 
-#   # display initial empty board
-
-#   # have user mark square
-
-#   # have computer mark square
-
-#   # display updated board
-
-#   # if winner display winner
-
-#   # if board full, declare tie
-
-#   # if neither winner nor full go back to step of user input
-
-#   end
-
-# # ask to play again
-
-# # go to beginning if yes
-
-# end
-# # goodbye
+prompt "Thanks for playing Tic Tac Toe! Goodbye."
