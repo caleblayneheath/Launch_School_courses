@@ -54,24 +54,36 @@ def player_places_piece!(brd)
 end
 
 def computer_places_piece!(brd)
-  line_of_defense = get_line_of_defense(brd)
-  square = if !line_of_defense.empty?
-             (line_of_defense & empty_squares(brd)).fetch(0)
+  attack_square = priority_square(brd, 'attack')
+  defend_square = priority_square(brd, 'defend')
+
+  square = if !attack_square.nil?
+             attack_square
+           elsif !defend_square.nil?
+             defend_square
+           elsif center_free?(brd)
+             5
            else
              empty_squares(brd).sample
            end
   brd[square] = COMPUTER_MARKER
 end
 
-def get_line_of_defense(brd)
+def priority_square(brd, mode)
+  marker = COMPUTER_MARKER if mode == 'attack'
+  marker = PLAYER_MARKER if mode == 'defend'
   WINNING_LINES.each do |line|
     line_values = brd.values_at(*line)
-    if line_values.count(PLAYER_MARKER) == 2 &&
-       line_values.count(COMPUTER_MARKER) == 0
-      return line
+    if line_values.count(marker) == 2 &&
+       line_values.count(INITIAL_MARKER) == 1
+      return (line & empty_squares(brd)).fetch(0)
     end
   end
-  []
+  nil
+end
+
+def center_free?(brd)
+  brd[5] == INITIAL_MARKER
 end
 
 def board_full?(brd)
