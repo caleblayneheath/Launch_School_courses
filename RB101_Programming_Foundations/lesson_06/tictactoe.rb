@@ -54,8 +54,24 @@ def player_places_piece!(brd)
 end
 
 def computer_places_piece!(brd)
-  square = empty_squares(brd).sample
+  line_of_defense = get_line_of_defense(brd)
+  square = if !line_of_defense.empty?
+             (line_of_defense & empty_squares(brd)).fetch(0)
+           else
+             empty_squares(brd).sample
+           end
   brd[square] = COMPUTER_MARKER
+end
+
+def get_line_of_defense(brd)
+  WINNING_LINES.each do |line|
+    line_values = brd.values_at(*line)
+    if line_values.count(PLAYER_MARKER) == 2 &&
+       line_values.count(COMPUTER_MARKER) == 0
+      return line
+    end
+  end
+  []
 end
 
 def board_full?(brd)
@@ -79,8 +95,8 @@ end
 
 def display_wins(score_hsh)
   result = []
-  score_hsh.each { |name, score| result << "#{name} score: #{score}"}
-  prompt(result.join (' | '))
+  score_hsh.each { |name, score| result << "#{name} score: #{score}" }
+  prompt(result.join(' | '))
 end
 
 def get_overall_winner(score_hsh)
@@ -91,8 +107,8 @@ end
 
 loop do
   score = { 'Player' => 0, 'Computer' => 0 }
-  
-  loop do 
+
+  loop do
     board = initalize_board
 
     loop do
@@ -116,9 +132,9 @@ loop do
     end
 
     display_wins(score)
-    
+
     overall_winner = get_overall_winner(score)
-    
+
     if overall_winner != ''
       prompt("#{overall_winner} won the most games!")
       break
