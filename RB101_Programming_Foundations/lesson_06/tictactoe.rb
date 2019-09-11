@@ -1,3 +1,6 @@
+require 'pry'
+require 'pry-byebug'
+
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]]
@@ -74,12 +77,20 @@ def detect_winner(brd)
   nil
 end
 
-def add_wins(scores)
+def display_wins(score_hsh)
+  result = []
+  score_hsh.each { |name, score| result << "#{name} score: #{score}"}
+  prompt(result.join (' | '))
+end
 
+def get_overall_winner(score_hsh)
+  result = ''
+  score_hsh.each { |name, wins| result = name if wins >= 5 }
+  result
 end
 
 loop do
-  score = { player: 0, computer: 0 } 
+  score = { 'Player' => 0, 'Computer' => 0 }
   
   loop do 
     board = initalize_board
@@ -97,14 +108,24 @@ loop do
     display_board(board)
 
     if someone_won?(board)
-      # winner = detect_winner(board)
-      prompt "#{detect_winner(board)} won!"
-      
+      winner = detect_winner(board)
+      prompt "#{winner} won!"
+      score[winner] += 1
     else
       prompt "It's a tie!"
     end
 
+    display_wins(score)
     
+    overall_winner = get_overall_winner(score)
+    
+    if overall_winner != ''
+      prompt("#{overall_winner} won the most games!")
+      break
+    end
+
+    prompt('Press "enter" or "return" to begin next game.')
+    gets
   end
 
   prompt "Play again? (y or n)"
