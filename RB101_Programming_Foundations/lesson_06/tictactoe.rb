@@ -9,6 +9,7 @@ COMPUTER_NAME = 'Computer'
 CHOOSE = 'choose'
 # options for FIRST_PLAYER are PLAYER_NAME, COMPUTER_NAME, and CHOOSE
 FIRST_PLAYER = CHOOSE
+WINS_NEEDED = 5
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -57,7 +58,7 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
-# computer prioritizes offense, defense, center control
+# computer prioritizes in order: offense, defense, center control;
 # randomly selects valid move otherwise
 def computer_places_piece!(brd)
   attack_square = priority_square(brd, 'attack')
@@ -77,6 +78,7 @@ end
 
 # if computer 'attack', finds line it has 2 marks in but player has none
 # if computer 'defend', finds line player has 2 marks in but computer has none
+# then returns integer corresponding to empty square
 def priority_square(brd, mode)
   marker = COMPUTER_MARKER if mode == 'attack'
   marker = PLAYER_MARKER if mode == 'defend'
@@ -118,12 +120,14 @@ def display_wins(score_hsh)
   result = []
   score_hsh.each { |name, score| result << "#{name} score: #{score}" }
   prompt(result.join(' | '))
+  prompt("#{WINS_NEEDED} wins are needed to end the round.")
 end
 
-# returns name of winner as string
+# checks if winner reaches number of wins,
+# if so, returns name of winner as string
 def get_overall_winner(score_hsh)
   result = ''
-  score_hsh.each { |name, wins| result = name if wins >= 5 }
+  score_hsh.each { |name, wins| result = name if wins >= WINS_NEEDED }
   result
 end
 
@@ -135,7 +139,7 @@ def place_piece!(brd, current_player)
   end
 end
 
-def who_goes_first
+def set_first_player
   case FIRST_PLAYER
   when PLAYER_NAME
     PLAYER_NAME
@@ -161,7 +165,7 @@ def choose_player
   end
 end
 
-def alternate_player(current_player)
+def switch_player(current_player)
   case current_player
   when PLAYER_NAME
     COMPUTER_NAME
@@ -175,11 +179,11 @@ loop do
 
   loop do
     board = initalize_board
-    current_player = who_goes_first
+    current_player = set_first_player
     loop do
       display_board(board)
       place_piece!(board, current_player)
-      current_player = alternate_player(current_player)
+      current_player = switch_player(current_player)
       break if someone_won?(board) || board_full?(board)
     end
 
@@ -198,11 +202,12 @@ loop do
     overall_winner = get_overall_winner(score)
 
     if overall_winner != ''
-      prompt("#{overall_winner} won the most games!")
+      prompt("#{overall_winner} won the round!")
       break
     end
 
-    prompt('Press "enter" or "return" to begin next game.')
+    # needed to keep board and and winner message from instantly disappearing
+    prompt('Press "enter" or "return" to begin next round.')
     gets
   end
 
