@@ -34,31 +34,23 @@ def deal_cards(player, deck, number = 1)
   number.times do 
     dealt_card = deck.pop
     player[:cards] << dealt_card
+    score_hand(player)
     if !!player[:cards].rassoc('A')
       assign_ace_value(player)
     end
-    score_hand(player)
   end
 end
 
 def assign_ace_value(player)
-  if player[:score] > 21
-    aces = player[:cards].rassoc('A')
-    aces.each do |_, _, value|
-        value = 1
-        score_hand(player)
+  if (player[:score]) > 21
+    player[:cards].each do |card|
+        if card[-1] == 11
+          card[-1] = 1
+          score_hand(player)
+        end
         break if player[:score] <= 21
     end
   end
-  
-  
-  # hand.rassoc('A')[-1] = 1
-
-  # if player[:score] + CARD_VALUES['A'] > 21
-  #   return 1
-  # else
-  #   CARD_VALUES['A']
-  # end
 end
 
 def initial_deal(player, dealer, deck)
@@ -71,12 +63,16 @@ def score_hand(player)
 end
 
 def show_hands(player, dealer)
-  prompt("Dealer has: #{format_cards(dealer[:cards])}")
+  prompt("Dealer has: #{format_cards(dealer[:cards], 'hide')}")
   prompt("You have: #{format_cards(player[:cards])}")
 end
 
-def format_cards(cards)
-  cards.map { |_, value, _| value }.join(', ')
+def format_cards(cards, hide = nil)
+  show = cards.map { |_, value, _| value }.join(', ')
+  if hide == 'hide'
+    show[0] = 'Unknown card'
+  end
+  show
 end
 
 def busted?(player)
@@ -130,10 +126,6 @@ loop do
     prompt("Dealer busted!")
   end
 end
-
-# puts player
-# puts dealer
-# puts winner
 
 if winner == nil
   winner = compare_scores(player, dealer)
