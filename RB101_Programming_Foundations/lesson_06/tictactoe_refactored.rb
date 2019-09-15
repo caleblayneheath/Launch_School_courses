@@ -180,8 +180,7 @@ def play_again?
     prompt('Invalid input.')
   end
 
-  return true if answer == 'y'
-  nil
+  return answer == 'y'
 end
 
 def display_winner(winner)
