@@ -12,8 +12,12 @@ STARTING_DECK = SUITS.flat_map do |suit|
   cards
 end
 
+PLAYER_NAME = 'player'
+DEALER_NAME = 'dealer'
+
 DEALER_GOAL = 17
 GOAL_NUMBER = 21
+ROUNDS_TO_WIN = 5
 
 def prompt(string)
   puts "=> #{string}"
@@ -24,39 +28,35 @@ def initialize_deck
 end
 
 def initialize_player
-  { cards: [], total: 0 }
+  { cards: [], total: 0, busted: nil }
 end
 
-def deal_cards(player, deck, number = 1)
-  number.times do
-    dealt_card = deck.pop
-    player[:cards] << dealt_card
-    total_hand(player)
-    if !!player[:cards].rassoc('A')
-      assign_ace_value(player)
-    end
+def deal_cards(hand, deck, number = 1)
+  number.times { hand << deck.pop }
+end
+
+def evalute_hand(player)
+  player[:total] = player[:cards].sum(&:last)
+
+  if aces?(player[:cards])
+    correct_aces(player)
   end
 end
 
-def assign_ace_value(player)
+def aces?(hand)
+  !!hand.rassoc('A')
+end
+
+def correct_aces(player)
   if (player[:total]) > GOAL_NUMBER
     player[:cards].each do |card|
-      if card[-1] == 11
+      if card[1] == ('A')
         card[-1] = 1
-        total_hand(player)
+        player[:total] = player[:cards].sum(&:last)
       end
       break if player[:total] <= GOAL_NUMBER
     end
   end
-end
-
-def initial_deal(player, dealer, deck)
-  deal_cards(player, deck, 2)
-  deal_cards(dealer, deck, 2)
-end
-
-def total_hand(player)
-  player[:total] = player[:cards].sum(&:last)
 end
 
 def show_hands(player_hand, dealer_hand)
@@ -80,79 +80,150 @@ def busted?(total)
   total > GOAL_NUMBER
 end
 
+def make_busted(player)
+  player[:busted] = true
+end
+
 def compare_totals(player, dealer)
-  return 'dealer' if player[:total] < dealer[:total]
-  'player'
+  return DEALER_NAME if player[:total] < dealer[:total]
+  PLAYER_NAME
 end
 
 def invalid_choice
   prompt 'Invalid selection.'
 end
 
+def initial_deal(player, dealer, deck)
+  deal_cards(player[:cards], deck, 2)
+  deal_cards(dealer[:cards], deck, 2)
 
-# setup game
-game_deck = initialize_deck
-winner = nil
-
-# { cards: hand, total: value_of_hand}
-player = initialize_player
-dealer = initialize_player
-
-initial_deal(player, dealer, game_deck)
-show_hands(player[:cards], dealer[:cards])
-show_player_total(player[:total])
-
-# player turn
-loop do
-  prompt("Enter 'd' to draw a card, or 's' to stay")
-  choice = gets.chomp.downcase
-  puts
-
-  unless ['d', 's'].include?(choice)
-    invalid_choice
-    continue
-  end
-
-  if choice == 'd'
-    deal_cards(player, game_deck)
-  end
+  evalute_hand(player)
+  evalute_hand(dealer)
 
   show_hands(player[:cards], dealer[:cards])
   show_player_total(player[:total])
-  
-
-  if busted?(player[:total])
-    winner = 'dealer'
-    prompt("You busted!")
-    break
-  end
-
-  if choice == 's'
-    break
-  end
-
 end
 
-# dealer turn
-unless winner == 'dealer'
+# get input, check validity, ends turn if staying
+# otherwise deal and score cards, show hands, check if player busted
+def player_turn(player, dealer, deck)
   loop do
-    puts
-    if dealer[:total] <= DEALER_GOAL
-      deal_cards(dealer, game_deck)
-      show_hands(player[:cards], dealer[:cards])
-    else
+    choice = player_input
+    break if choice == 's'
+
+    deal_cards(player[:cards], deck)
+    evalute_hand(player)
+    show_hands(player[:cards], dealer[:cards])
+    show_player_total(player[:total])
+
+    if busted?(player[:total])
+      make_busted(player)
+      prompt("You busted!")
       break
     end
-
-    if busted?(dealer[:total])
-      winner = 'player'
-      prompt("Dealer busted!")
-    end
   end
 end
 
-if winner.nil?
-  winner = compare_totals(player, dealer)
+def player_input
+  choice = nil
+  loop do
+    prompt("Enter 'd' to draw a card, or 's' to stay")
+    choice = gets.chomp.downcase
+    break if ['d', 's'].include?(choice)
+    invalid_choice
+  end
+  choice
 end
 
-prompt("The winner is #{winner}.")
+def dealer_turn(player, dealer, deck)
+  loop do
+    if dealer[:total] <= DEALER_GOAL
+      deal_cards(dealer[:cards], deck)
+      evalute_hand(dealer)
+      show_hands(player[:cards], dealer[:cards])
+      if busted?(dealer[:total])
+        make_busted(dealer)
+        prompt("Dealer busted!")
+        break
+      end
+    else
+      prompt 'Dealer stays.'
+      break
+    end
+    sleep 1
+  end
+end
+
+def play_again?
+  answer = nil
+  loop do
+    prompt "Play again? (y or n)"
+    answer = gets.chomp.downcase
+    break if ['y', 'n'].include?(answer)
+    prompt('Invalid input.')
+  end
+  answer == 'y'
+end
+
+def goodbye
+  prompt("Thanks for playing! Goodbye.")
+end
+
+def display_winner(winner)
+  prompt("The winner is #{winner}.")
+end
+
+def get_overall_winner(score_hsh)
+  result = nil
+  score_hsh.each { |name, wins| result = name if wins >= ROUNDS_TO_WIN }
+  result
+end
+
+def display_overall_winner(overall_winner)
+  prompt("#{overall_winner} won the game!") if overall_winner
+end
+
+def update_score(score, winner)
+  score[winner] += 1
+end
+
+def display_score(score)
+  prompt "Player wins: #{score[PLAYER_NAME]}"
+  prompt "Dealer wins: #{score[DEALER_NAME]}"
+end
+
+loop do
+  score = { PLAYER_NAME => 0, DEALER_NAME => 0 }
+  loop do
+    puts
+    prompt 'Starting new round.'
+
+    game_deck = initialize_deck
+    winner = nil
+
+    player = initialize_player
+    dealer = initialize_player
+
+    initial_deal(player, dealer, game_deck)
+
+    player_turn(player, dealer, game_deck)
+    winner = DEALER_NAME if player[:busted]
+
+    dealer_turn(player, dealer, game_deck) unless winner == DEALER_NAME
+    winner = PLAYER_NAME if dealer[:busted]
+
+    winner = compare_totals(player, dealer) if winner.nil?
+
+    display_winner(winner)
+
+    update_score(score, winner)
+    display_score(score)
+
+    overall_winner = get_overall_winner(score)
+    display_overall_winner(overall_winner)
+    break if !!overall_winner
+  end
+
+  break unless play_again?
+end
+goodbye
