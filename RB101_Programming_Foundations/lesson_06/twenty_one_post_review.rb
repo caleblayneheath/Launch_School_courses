@@ -1,16 +1,10 @@
 require 'pry'
 require 'pry-byebug'
 
-SUITS = %w(C D H S)
+SUITS = %w(clubs diamonds hearts spades)
 CARD_VALUES = { '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7,
-                '8' => 8, '9' => 9, '10' => 10, 'J' => 10, 'Q' => 10,
-                'K' => 10, 'A' => 11 }
-
-STARTING_DECK = SUITS.flat_map do |suit|
-  cards = []
-  CARD_VALUES.to_a.each { |string, number| cards << [suit, string, number] }
-  cards
-end
+                '8' => 8, '9' => 9, '10' => 10, 'jack' => 10, 'queen' => 10,
+                'king' => 10, 'ace' => 11 }
 
 PLAYER_NAME = 'player'
 DEALER_NAME = 'dealer'
@@ -24,7 +18,11 @@ def prompt(string)
 end
 
 def initialize_deck
-  STARTING_DECK.dup.shuffle
+  SUITS.flat_map do |suit|
+    cards = []
+    CARD_VALUES.to_a.each { |string, number| cards << [suit, string, number] }
+    cards
+  end.shuffle
 end
 
 def initialize_player
@@ -44,11 +42,11 @@ def evalute_hand(player)
 end
 
 def aces?(hand)
-  !!hand.rassoc('A')
+  hand.rassoc('A')
 end
 
 def correct_aces(player)
-  if (player[:total]) > GOAL_NUMBER
+  if player[:total] > GOAL_NUMBER
     player[:cards].each do |card|
       if card[1] == ('A')
         card[-1] = 1
@@ -64,12 +62,16 @@ def show_hands(player_hand, dealer_hand)
   prompt("You have: #{format_cards(player_hand)}.")
 end
 
+def reveal_dealer_card(dealer_hand)
+  prompt("Dealer had: #{format_cards(dealer_hand)}")
+end
+
 def show_player_total(total)
   prompt("Your total is #{total}.")
 end
 
 def format_cards(cards, hide = nil)
-  show = cards.map { |_, value, _| value }
+  show = cards.map { |suit, rank, _| "#{rank} of #{suit}" }
   if hide == 'hide'
     show[0] = 'Unknown card'
   end
@@ -85,8 +87,7 @@ def make_busted(player)
 end
 
 def compare_totals(player, dealer)
-  return DEALER_NAME if player[:total] < dealer[:total]
-  PLAYER_NAME
+  player[:total] < dealer[:total] ? DEALER_NAME : PLAYER_NAME
 end
 
 # clear is for linux, cls for windows
@@ -141,22 +142,17 @@ def player_input
 end
 
 def dealer_turn(player, dealer, deck)
-  loop do
-    if dealer[:total] <= DEALER_GOAL
-      deal_cards(dealer[:cards], deck)
-      evalute_hand(dealer)
-      show_hands(player[:cards], dealer[:cards])
-      if busted?(dealer[:total])
-        make_busted(dealer)
-        prompt("Dealer busted!")
-        break
-      end
-    else
-      prompt 'Dealer stays.'
+  while dealer[:total] < DEALER_GOAL
+    deal_cards(dealer[:cards], deck)
+    evalute_hand(dealer)
+    show_hands(player[:cards], dealer[:cards])
+    if busted?(dealer[:total])
+      make_busted(dealer)
+      prompt("Dealer busted!")
       break
     end
-    sleep 1
   end
+  prompt 'Dealer stays.'
 end
 
 def play_again?
@@ -193,8 +189,14 @@ def update_score(score, winner)
 end
 
 def display_score(score)
-  prompt "Player wins: #{score[PLAYER_NAME]}"
-  prompt "Dealer wins: #{score[DEALER_NAME]}"
+  prompt "Score: #{PLAYER_NAME} #{score[PLAYER_NAME]} | #{DEALER_NAME} #{score[DEALER_NAME]}."
+  # prompt "Player wins: #{score[PLAYER_NAME]}"
+  # prompt "Dealer wins: #{score[DEALER_NAME]}"
+end
+
+def begin_next_round
+  prompt('Press "enter" or "return" to begin next round.')
+  gets
 end
 
 loop do
@@ -217,6 +219,8 @@ loop do
     dealer_turn(player, dealer, game_deck) unless winner == DEALER_NAME
     winner = PLAYER_NAME if dealer[:busted]
 
+    reveal_dealer_card(dealer[:cards])
+
     winner = compare_totals(player, dealer) if winner.nil?
 
     display_winner(winner)
@@ -226,7 +230,9 @@ loop do
 
     overall_winner = get_overall_winner(score)
     display_overall_winner(overall_winner)
-    break if !!overall_winner
+    break if overall_winner
+
+    begin_next_round
   end
 
   break unless play_again?
