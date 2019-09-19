@@ -1,6 +1,3 @@
-require 'pry'
-require 'pry-byebug'
-
 SUITS = %w(clubs diamonds hearts spades)
 CARD_VALUES = { '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7,
                 '8' => 8, '9' => 9, '10' => 10, 'jack' => 10, 'queen' => 10,
@@ -35,20 +32,19 @@ end
 
 def evalute_hand(player)
   player[:total] = player[:cards].sum(&:last)
-
   if aces?(player[:cards])
     correct_aces(player)
   end
 end
 
 def aces?(hand)
-  hand.rassoc('A')
+  hand.rassoc('ace')
 end
 
 def correct_aces(player)
   if player[:total] > GOAL_NUMBER
     player[:cards].each do |card|
-      if card[1] == ('A')
+      if card[1] == ('ace')
         card[-1] = 1
         player[:total] = player[:cards].sum(&:last)
       end
@@ -67,7 +63,7 @@ def reveal_dealer_card(dealer_hand)
 end
 
 def show_player_total(total)
-  prompt("Your total is #{total}.")
+  prompt("Total is #{total}.")
 end
 
 def format_cards(cards, hide = nil)
@@ -152,7 +148,7 @@ def dealer_turn(player, dealer, deck)
       break
     end
   end
-  prompt 'Dealer stays.'
+  prompt 'Dealer stays.' if dealer[:busted].nil?
 end
 
 def play_again?
@@ -181,7 +177,7 @@ def get_overall_winner(score_hsh)
 end
 
 def display_overall_winner(overall_winner)
-  prompt("#{overall_winner} won the game!") if overall_winner
+  prompt("#{overall_winner.upcase} won the game!") if overall_winner
 end
 
 def update_score(score, winner)
@@ -190,13 +186,12 @@ end
 
 def display_score(score)
   prompt "Score: #{PLAYER_NAME} #{score[PLAYER_NAME]} | #{DEALER_NAME} #{score[DEALER_NAME]}."
-  # prompt "Player wins: #{score[PLAYER_NAME]}"
-  # prompt "Dealer wins: #{score[DEALER_NAME]}"
 end
 
 def begin_next_round
   prompt('Press "enter" or "return" to begin next round.')
   gets
+  clear
 end
 
 loop do
