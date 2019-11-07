@@ -1,9 +1,10 @@
-class RPSGame
-  attr_reader :human, :computer
+class RPSGame 
+  WINNING_SCORE = 3
 
   def initialize
     @human = Human.new
     @computer = Computer.new
+    @round_winner = nil
   end
 
   def display_welcome_message
@@ -11,7 +12,7 @@ class RPSGame
   end
 
   def display_goodbye_message
-    puts "Thanks for playing Rock, Paper, Scissors. Good bye!"
+    puts "Thanks for playing Rock, Paper, Scissors. Goodbye!"
   end
 
   def display_moves
@@ -19,11 +20,19 @@ class RPSGame
     puts "#{computer.name} chose #{computer.move}."
   end
 
-  def display_winner
+  def determine_round_winner
     if human.move > computer.move
-      puts "#{human.name} won!"
+      self.round_winner = human.name
+      human.increase_score
     elsif human.move < computer.move
-      puts "#{computer.name} won!"
+      self.round_winner = computer.name
+      computer.increase_score
+    end
+  end
+
+  def display_winner
+    if round_winner 
+      puts "#{round_winner} wins the round!"
     else
       puts "It's a tie!"
     end
@@ -41,17 +50,64 @@ class RPSGame
     answer == 'y'
   end
 
+  def display_round_start_message
+    puts "Beginning game round."
+  end
+
+  def display_player_scores
+    puts "#{human.name} has #{human.score} points."
+    puts "#{computer.name} has #{computer.score} points."
+    puts
+  end
+
+  def reset_round_winner
+    self.round_winner = nil
+  end
+
+  def game_over?
+    human.score >= WINNING_SCORE || computer.score >= WINNING_SCORE
+  end
+
+  def display_overall_winner
+    overall_winner = if human.score >= WINNING_SCORE
+                       human.name
+                     else
+                       computer.name
+                     end
+    puts "#{overall_winner} won the game!"
+  
+  end
+
+  def reset_scores
+    human.reset_score
+    computer.reset_score
+  end
+
   def play
     display_welcome_message
     loop do
-      human.choose
-      computer.choose
-      display_moves
-      display_winner
+      reset_scores
+      loop do
+        reset_round_winner
+        display_round_start_message
+        human.choose
+        computer.choose
+        display_moves
+        determine_round_winner
+        display_winner
+        display_player_scores
+        break if game_over?
+      end
+      display_overall_winner
       break unless play_again?
     end
     display_goodbye_message
   end
+
+  private
+  
+  attr_reader :human, :computer
+  attr_accessor :round_winner
 end
 
 class Move
@@ -63,19 +119,19 @@ class Move
   end
 
   def to_s
-    @value
+    value
   end
 
   def scissors?
-    @value == 'scissors'
+    value == 'scissors'
   end
 
   def rock?
-    @value == 'rock'
+    value == 'rock'
   end
 
   def paper?
-    @value == 'paper'
+    value == 'paper'
   end
 
   def >(other_move)
@@ -89,16 +145,33 @@ class Move
       (paper? && other_move.scissors?) ||
       (scissors? && other_move.rock?)
   end
+
+  private
+
+  attr_reader :value
 end
 
 class Player
-  attr_accessor :move, :name
+  attr_reader :move, :name, :score
 
   def initialize(player_type = :human)
     @player_type = player_type
+    @score = 0
     @move = nil
     set_name
   end
+
+  def increase_score
+    self.score += 1
+  end
+
+  def reset_score
+    self.score = 0
+  end
+
+  private
+
+  attr_writer :move, :name, :score
 end
 
 class Human < Player
