@@ -1,5 +1,23 @@
 class RPSGame
-  WINNING_SCORE = 2
+  WINNING_SCORE = 10
+
+  def play
+    display_welcome_message
+    loop do
+      reset_scores
+      play_round
+      display_overall_winner
+      display_move_history
+      break unless play_again?
+      puts
+    end
+    display_goodbye_message
+  end
+
+  private
+
+  attr_reader :human, :computer
+  attr_accessor :round_winner, :history
 
   def initialize
     @human = Human.new
@@ -49,7 +67,6 @@ class RPSGame
       break if ['y', 'n'].include?(answer.downcase)
       puts "Sorry, must be y or n."
     end
-
     answer == 'y'
   end
 
@@ -109,23 +126,6 @@ class RPSGame
     puts "#{human.name} has played: #{history[human.name].join(', ')}"
     puts "#{computer.name} has played: #{history[computer.name].join(', ')}"
   end
-
-  def play
-    display_welcome_message
-    loop do
-      reset_scores
-      play_round
-      display_overall_winner
-      display_move_history
-      break unless play_again?
-    end
-    display_goodbye_message
-  end
-
-  private
-
-  attr_reader :human, :computer
-  attr_accessor :round_winner, :history
 end
 
 class Move
@@ -133,18 +133,18 @@ class Move
 
   MATCHUPS = {
     'rock' =>
-    { beats: ['lizard', 'scissors'], loses_to: ['paper', 'spock'] },
+    { beats: ['lizard', 'scissors'], loses_to: ['paper', 'Spock'] },
     'paper' =>
-    { beats: ['spock', 'rock'], loses_to: ['lizard', 'scissors'] },
+    { beats: ['Spock', 'rock'], loses_to: ['lizard', 'scissors'] },
     'scissors' =>
-    { beats: ['lizard', 'paper'], loses_to: ['rock', 'spock'] },
+    { beats: ['lizard', 'paper'], loses_to: ['rock', 'Spock'] },
     'lizard' =>
-    { beats: ['paper', 'spock'], loses_to: ['scissors', 'rock'] },
-    'spock' =>
+    { beats: ['paper', 'Spock'], loses_to: ['scissors', 'rock'] },
+    'Spock' =>
     { beats: ['rock', 'scissors'], loses_to: ['paper', 'lizard'] }
   }
 
-  VALUES = MATCHUPS.keys # ['rock', 'paper', 'scissors', 'lizard', 'spock']
+  VALUES = MATCHUPS.keys
 
   attr_reader :value
 
@@ -168,8 +168,7 @@ end
 class Player
   attr_reader :move, :name, :score
 
-  def initialize(player_type = :human)
-    @player_type = player_type
+  def initialize
     @score = 0
     @move = nil
     set_name
@@ -189,6 +188,29 @@ class Player
 end
 
 class Human < Player
+  def choose
+    input = nil
+    loop do
+      puts "Please choose (r)ock, (p)aper, (s)cissors, (l)izard, or (S)pock:"
+      input = gets.chomp[0]
+      break if ['r', 'p', 's', 'l', 'S'].include?(input)
+      puts "Invalid choice."
+    end
+    self.move = Move.new(assign_choice(input))
+  end
+
+  private
+
+  def assign_choice(choice)
+    case choice
+    when 'r' then 'rock'
+    when 'p' then 'paper'
+    when 's' then 'scissors'
+    when 'l' then 'lizard'
+    when 'S' then 'Spock'
+    end
+  end
+
   def set_name
     n = ''
     loop do
@@ -199,33 +221,49 @@ class Human < Player
     end
     self.name = n
   end
-
-  def choose
-    choice = nil
-    loop do
-      puts "Please choose rock, paper, or scissors:"
-      choice = gets.chomp
-      break if Move::VALUES.include?(choice)
-      puts "Invalid choice."
-    end
-    self.move = Move.new(choice)
-  end
 end
 
 class Computer < Player
-  @move_list = (Move::VALUES).dup
-  
-  def set_name
-    self.name = ['R2D2', 'Hal', 'Johnny 5'].sample
+  # random selections with different arrays of choices
+  PLAY_STYLE = {
+    'default' => Move::VALUES,
+    'R2D2' => ['rock'],
+    'Hal' => (['scissors'] * 4) + (['lizard', 'Spock'] * 2) + ['rock'],
+    'Johnny 5' => (['lizard', 'Spock'] * 3) + ['scissors']
+  }
+
+  def initialize
+    super
+    set_behavior
   end
 
   def choose
     self.move = Move.new(move_list.sample)
   end
 
-  private 
-  
+  private
+
   attr_accessor :move_list
+
+  def set_name
+    self.name = ['R2D2', 'Hal', 'Johnny 5'].sample
+  end
+
+  def set_behavior
+    choice = ''
+    loop do
+      puts "Would you like #{name} to play with its preferred style? (y/n)"
+      choice = gets.chomp.downcase
+      break if ['y', 'n'].include?(choice)
+      puts "You must enter 'y' or 'n'."
+    end
+
+    @move_list = if choice == 'y'
+                   PLAY_STYLE[name]
+                 elsif choice == 'n'
+                   PLAY_STYLE['default']
+                 end
+  end
 end
 
 RPSGame.new.play
