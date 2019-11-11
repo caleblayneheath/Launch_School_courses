@@ -1,5 +1,5 @@
 class RPSGame
-  WINNING_SCORE = 2
+  WINNING_SCORE = 10
 
   def play
     display_welcome_message
@@ -16,13 +16,12 @@ class RPSGame
   private
 
   attr_reader :human, :computer
-  attr_accessor :round_winner, :history
+  attr_accessor :round_winner
 
   def initialize
     @human = Human.new
     @computer = Computer.new
     @round_winner = nil
-    @history = { human.name => [], computer.name => [] }
   end
 
   def display_welcome_message
@@ -105,18 +104,12 @@ class RPSGame
     computer.reset_score
   end
 
-  def add_moves_to_history
-    history[human.name].append(human.move.value)
-    history[computer.name].append(computer.move.value)
-  end
-
   def play_round
     loop do
       reset_round_winner
       display_round_start_message
       human.choose
       computer.choose
-      add_moves_to_history
       display_moves
       determine_round_winner
       display_winner
@@ -126,8 +119,8 @@ class RPSGame
   end
 
   def display_move_history
-    puts "#{human.name} has played: #{history[human.name].join(', ')}"
-    puts "#{computer.name} has played: #{history[computer.name].join(', ')}"
+    puts "#{human.name} has played: #{human.history.join(', ')}"
+    puts "#{computer.name} has played: #{computer.history.join(', ')}"
     puts
   end
 end
@@ -159,11 +152,12 @@ class Move
 end
 
 class Player
-  attr_reader :move, :name, :score
+  attr_reader :move, :name, :score, :history
 
   def initialize
     @score = 0
     @move = nil
+    @move_history = []
     set_name
   end
 
@@ -176,6 +170,10 @@ class Player
   end
 
   private
+
+  def add_move_to_history
+    move_history.append(move)
+  end
 
   attr_writer :move, :name, :score
 end
@@ -192,6 +190,7 @@ class Human < Player
     end
     system('clear')
     self.move = Move.new(input)
+    add_move_to_history
   end
 
   private
@@ -238,6 +237,7 @@ class Computer < Player
 
   def choose
     self.move = Move.new(move_list.sample)
+    add_move_to_history
   end
 
   private
