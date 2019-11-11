@@ -52,11 +52,13 @@ class RPSGame
   end
 
   def display_winner
+    puts
     if round_winner
       puts "#{round_winner} wins the round!"
     else
       puts "It's a tie!"
     end
+    puts
   end
 
   def play_again?
@@ -73,6 +75,7 @@ class RPSGame
 
   def display_round_start_message
     puts "Beginning game round."
+    puts
   end
 
   def display_player_scores
@@ -119,8 +122,8 @@ class RPSGame
   end
 
   def display_move_history
-    puts "#{human.name} has played: #{human.history.join(', ')}"
-    puts "#{computer.name} has played: #{computer.history.join(', ')}"
+    puts "#{human.name} has played: #{human.move_history.join(', ')}"
+    puts "#{computer.name} has played: #{computer.move_history.join(', ')}"
     puts
   end
 end
@@ -152,7 +155,7 @@ class Move
 end
 
 class Player
-  attr_reader :move, :name, :score, :history
+  attr_reader :move, :name, :score, :move_history
 
   def initialize
     @score = 0
@@ -215,7 +218,7 @@ class Human < Player
       puts "What's your name?"
       n = gets.chomp
       break unless n.delete(' ').empty?
-      puts "Sorry, must not be an empty string."
+      puts "Sorry, your name must not be an empty string."
     end
     self.name = n
   end
@@ -251,7 +254,7 @@ class Computer < Player
   def set_behavior
     choice = ''
     loop do
-      puts "Would you like #{name} to play with its preferred style? (y/n)"
+      puts "Would you like #{name} to play using its preferred style? (y/n)"
       choice = gets.chomp.downcase
       break if ['y', 'n'].include?(choice)
       puts "You must enter 'y' or 'n'."
