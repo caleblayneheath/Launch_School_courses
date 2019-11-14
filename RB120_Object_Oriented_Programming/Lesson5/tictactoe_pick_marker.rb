@@ -1,25 +1,24 @@
-require 'pry-byebug'
-
 class TTTGame
-  HUMAN_MARKER = 'X'
-  COMPUTER_MARKER = 'O'
-  # HUMAN_MARKER, COMPUTER_MARKER, or 'choose'
-  FIRST_TO_MOVE = 'choose'
-  SCORE_TO_WIN = 2
+  SCORE_TO_WIN = 5
 
   def initialize
     @board = Board.new
-    @human = Player.new(HUMAN_MARKER)
-    @computer = Player.new(COMPUTER_MARKER)
-    @current_marker = FIRST_TO_MOVE
+    @human = Human.new
+    @computer = Computer.new
+    # 'human', 'computer', or 'choose'
+    @first_to_move = 'choose'
+    @current_marker = nil
     @round_winner = nil
   end
 
   def play
     clear
     display_welcome_message
+    choose_markers
+    clear
+    choose_first_to_move
+    clear
     loop do
-      choose_first_to_move
       play_round
       display_game_result
       break unless play_again?
@@ -34,20 +33,49 @@ class TTTGame
   attr_reader :board, :human, :computer, :current_player
 
   def choose_first_to_move
-    return unless FIRST_TO_MOVE == 'choose'
+    @current_marker = case @first_to_move
+                      when 'human' then human.marker
+                      when 'computer' then computer.marker
+                      when 'choose' then user_chooses_move
+                      end
+    @first_to_move = @current_marker
+  end
+
+  def user_chooses_move
     input = nil
     loop do
       puts "Who will go first? Please enter 'player' or 'computer'."
       input = gets.chomp.downcase
       input = if input.start_with?('pl')
-                HUMAN_MARKER
+                human.marker
               elsif input.start_with?('co')
-                COMPUTER_MARKER
+                computer.marker
               end
-      break if [HUMAN_MARKER, COMPUTER_MARKER].include?(input)
+      break if [human.marker, computer.marker].include?(input)
       puts "Invalid entry."
     end
-    @current_marker = input
+    input
+  end
+
+  def choose_markers
+    choose_human_marker
+    choose_computer_marker
+  end
+
+  def choose_human_marker
+    input = nil
+    loop do
+      puts "Choose 'X' or 'O' for your marker."
+      input = gets.chomp.upcase
+      break if ['X', 'O'].include?(input)
+      puts "Invalid selection."
+    end
+    human.marker = input
+  end
+
+  def choose_computer_marker
+    marker = human.marker == 'X' ? 'O' : 'X'
+    computer.marker = marker
   end
 
   def play_round
@@ -61,8 +89,13 @@ class TTTGame
       set_round_winner_and_score
       display_round_result
       break if someone_won_game?
+      # reset_starting_player
       start_next_round
     end
+  end
+
+  def reset_starting_player
+    @current_marker = @first_to_move
   end
 
   def clear
@@ -75,7 +108,9 @@ class TTTGame
   end
 
   def display_board
-    puts "You're a #{HUMAN_MARKER}. Computer is a #{COMPUTER_MARKER}."
+    str = "#{human.name} is a #{human.marker}. "
+    str += "#{computer.name} is a #{computer.marker}."
+    puts str
     puts ""
     board.draw
     puts ""
@@ -87,12 +122,12 @@ class TTTGame
   end
 
   def human_turn?
-    @current_marker == HUMAN_MARKER
+    @current_marker == human.marker
   end
 
   def current_player_moves
     human_turn? ? human_moves : computer_moves
-    @current_marker = human_turn? ? COMPUTER_MARKER : HUMAN_MARKER
+    @current_marker = human_turn? ? computer.marker : human.marker
   end
 
   def human_moves
@@ -107,12 +142,12 @@ class TTTGame
   end
 
   def computer_moves
-    squares_where_computer_wins = board.squares_of_interest(COMPUTER_MARKER)
-    squares_where_human_wins = board.squares_of_interest(HUMAN_MARKER)
+    squares_where_computer_wins = board.squares_of_interest(computer.marker)
+    squares_where_human_wins = board.squares_of_interest(human.marker)
 
-    moves = if !squares_where_computer_wins.empty?
+    moves = if squares_where_computer_wins
               squares_where_computer_wins
-            elsif !squares_where_human_wins.empty?
+            elsif squares_where_human_wins
               squares_where_human_wins
             elsif board.center_unmarked?
               [5]
@@ -135,8 +170,8 @@ class TTTGame
 
   def set_round_winner_and_score
     @round_winner = case board.winning_marker
-                    when HUMAN_MARKER then human
-                    when COMPUTER_MARKER then computer
+                    when human.marker then human
+                    when computer.marker then computer
                     end
     @round_winner&.increase_score
   end
@@ -149,9 +184,9 @@ class TTTGame
     clear_screen_and_display_board
     case @round_winner
     when human
-      puts "You won the round!"
+      puts "#{human.name} won the round!"
     when computer
-      puts "Computer won the round!"
+      puts "#{computer.name} won the round!"
     else
       puts "Tie round; the board is full!"
     end
@@ -159,8 +194,10 @@ class TTTGame
   end
 
   def display_score
+    str = "The score is #{human.name}-#{human.score} "
+    str += "to #{computer.name}-#{computer.score}."
     puts
-    puts "The score is Human-#{human.score} to Computer-#{computer.score}."
+    puts str
     puts
   end
 
@@ -199,7 +236,7 @@ class TTTGame
 
   def reset(new_game: false)
     board.reset
-    @current_marker = FIRST_TO_MOVE
+    @current_marker = @first_to_move
     if new_game
       human.reset_score
       computer.reset_score
@@ -255,12 +292,7 @@ class Board
         line.each { |key| squares_to_claim << key if @squares[key].unmarked? }
       end
     end
-    squares_to_claim
-  end
-
-  def two_claimed_and_one_unclaimed_square?(markers, player_marker)
-    markers.count(player_marker) == 2 &&
-      markers.count(Square::INITIAL_MARKER) == 1
+    squares_to_claim.empty? ? nil : squares_to_claim
   end
 
   def full?
@@ -283,13 +315,20 @@ class Board
     (1..9).each { |key| @squares[key] = Square.new(Square::INITIAL_MARKER) }
   end
 
+  def center_unmarked?
+    @squares[5].unmarked?
+  end
+
+  private
+
+  def two_claimed_and_one_unclaimed_square?(markers, player_marker)
+    markers.count(player_marker) == 2 &&
+      markers.count(Square::INITIAL_MARKER) == 1
+  end
+
   def three_identical_markers(squares)
     markers = squares.select(&:marked?).map(&:marker)
     markers.count(markers.first) == 3
-  end
-
-  def center_unmarked?
-    @squares[5].unmarked?
   end
 end
 
@@ -316,10 +355,10 @@ class Square
 end
 
 class Player
-  attr_reader :marker, :score
+  attr_reader :score, :name
+  attr_accessor :marker
 
-  def initialize(marker)
-    @marker = marker
+  def initialize
     @score = 0
   end
 
@@ -332,5 +371,39 @@ class Player
   end
 end
 
+class Human < Player
+  def initialize
+    super
+    @name = choose_name
+  end
+
+  private
+
+  def choose_name
+    input = nil
+    loop do
+      puts "Please enter your name."
+      input = gets.chomp
+      break unless input.delete(' ').empty?
+      puts "Empty strings are not valid."
+    end
+    input
+  end
+end
+
+class Computer < Player
+  def initialize
+    super
+    @name = choose_name
+  end
+
+  private
+
+  def choose_name
+    ['CLU', 'AM', "Skynet"].sample
+  end
+end
+
+system('clear')
 game = TTTGame.new
 game.play
