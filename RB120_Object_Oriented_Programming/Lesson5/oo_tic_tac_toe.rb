@@ -89,13 +89,8 @@ class TTTGame
       set_round_winner_and_score
       display_round_result
       break if someone_won_game?
-      # reset_starting_player
       start_next_round
     end
-  end
-
-  def reset_starting_player
-    @current_marker = @first_to_move
   end
 
   def clear
