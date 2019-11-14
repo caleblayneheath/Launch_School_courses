@@ -87,6 +87,17 @@ class TTTGame
     board[square] = human.marker
   end
 
+  def computer_moves
+    squares_to_defend = board.threatened_squares(COMPUTER_MARKER)
+
+    square = if !squares_to_defend.empty?
+               squares_to_defend.sample
+             else
+               board.unmarked_keys.sample
+             end
+    board[square] = computer.marker
+  end
+
   def joinor(list, delimiter = ', ', conjunction = 'or')
     if list.size == 2
       "#{list.first} #{conjunction} #{list.last}"
@@ -95,11 +106,6 @@ class TTTGame
     else
       list.join
     end
-  end
-
-  def computer_moves
-    square = board.unmarked_keys.sample
-    board[square] = computer.marker
   end
 
   def set_round_winner_and_score
@@ -216,6 +222,22 @@ class Board
     @squares.keys.select { |key| @squares[key].unmarked? }
   end
 
+  def threatened_squares(player_marker)
+    squares_to_claim = []
+    WINNING_LINES.each do |line|
+      markers = @squares.values_at(*line).map(&:marker)
+      if two_claimed_and_one_unclaimed_square?(markers, player_marker)
+        line.each { |key| squares_to_claim << key if @squares[key].unmarked? }
+      end
+    end
+    squares_to_claim
+  end
+
+  def two_claimed_and_one_unclaimed_square?(markers, player_marker)
+    markers.count(player_marker) == 2 &&
+      markers.count(Square::INITIAL_MARKER) == 1
+  end
+
   def full?
     unmarked_keys.empty?
   end
@@ -237,7 +259,7 @@ class Board
   end
 
   def three_identical_markers(squares)
-    markers = squares.select(&:marked?).collect(&:marker)
+    markers = squares.select(&:marked?).map(&:marker)
     markers.count(markers.first) == 3
   end
 end
