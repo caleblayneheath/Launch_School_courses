@@ -1,27 +1,32 @@
 require 'pry-byebug'
 
-class Game  
+class Game
+  GOAL_NUMBER = 21
+
+  attr_reader :deck
+
   def initialize
     @player = Player.new
     @dealer = Dealer.new
     @deck = Deck.new
     @winner = nil
   end
-  
+
   def start
     clear
     display_welcome_message
     deal_cards
     display_cards
     player_turn
-    dealer_turn
+    dealer_turn unless player.busted?
+    compare_points
     show_result
     display_goodbye_message
   end
 
   private
 
-  attr_reader :player, :dealer, :deck, :winner
+  attr_reader :player, :dealer, :winner
 
   def clear
     system('clear')
@@ -35,70 +40,88 @@ class Game
   def deal_cards
     deck.deal(player, 2)
     deck.deal(dealer, 2)
+    dealer.hand.first.hide_card
   end
 
   def display_cards
     player.show_hand
     dealer.show_hand
+    puts
   end
 
   def player_turn
-    # hit or stay
-    # if hit
-    #   draw card
-    #   calculate hand total
-    #   check for busted
-    #   if busted?
-    #     declare dealer winner
-    # if stay
-    #  break
     loop do
-      input = get_player_input
-     
+      input = player.choose
+
       case input
       when 'h' then player.hit(deck)
       when 's' then player.stay
       end
-      
+      clear
+      player.total
+      display_cards
+
       if player.busted?
-        @winner = dealer 
+        @winner = dealer
+        puts "#{name} busted!"
+        puts
         break
       end
 
       break if player.stay?
     end
-    puts player.hand
-    puts player.point_total
-  end
-
-  def get_player_input
-    input = nil
-    loop do
-      puts "Type 'h' to hit or 's' to stay."
-      input = gets.chomp.downcase
-      break if ['h', 's'].include?(input)
-      puts 'Invalid entry.'
-    end
-    input
   end
 
   def dealer_turn
+    dealer.total
+    loop do
+      dealer.stay if dealer.at_limit?
+      dealer.stay? ? break : dealer.hit(deck)
+      clear
+      display_cards
+
+      dealer.total
+
+      if dealer.busted?
+        clear
+        display_cards
+        @winner = player
+        puts "#{dealer.name} busted!"
+        puts
+        break
+      end
+    end
+  end
+
+  def compare_points
+    return if winner
+
+    @winner = if player > dealer
+                player
+              elsif dealer > player
+                dealer
+              end
   end
 
   def show_result
-    return unless winner
-    puts "The winner is #{winner.name}"
+    if winner
+      puts "The winner is #{winner.name}"
+    else
+      puts "It's a tie!"
+    end
   end
 
   def display_goodbye_message
     puts
-    puts "Thanks for playing Goodbye!"
+    puts "Thanks for playing. Goodbye!"
   end
 end
 
 module Hand
+  include Comparable
+
   attr_reader :hand
-  
+
   def show_hand
     puts "#{name} has: #{hand.join(', ')}"
   end
@@ -116,15 +139,26 @@ module Hand
   end
 
   def total
-    working_total = nil
+    working_total = 0
     hand.each do |card|
       working_total += assign_points(card.value)
     end
+    working_total = correct_for_aces(working_total)
     @point_total = working_total
   end
 
-  def assign_points(card_value)
-    if (2..10).include?(value.to_i)
+  def busted?
+    @point_total > Game::GOAL_NUMBER
+  end
+
+  def <=>(other_player)
+    point_total <=> other_player.point_total
+  end
+
+  private
+
+  def assign_points(value)
+    if (2..10).cover?(value.to_i)
       value.to_i
     elsif value == 'Jack'
       10
@@ -137,34 +171,53 @@ module Hand
     end
   end
 
-  def busted?
+  def correct_for_aces(working_total)
+    number_of_aces = hand.select { |card| card.value == 'Ace' }.size
+    number_of_aces.times do
+      break if working_total <= Game::GOAL_NUMBER
+      working_total -= 10 if working_total > Game::GOAL_NUMBER
+    end
+    working_total
   end
 end
 
 class Player
   include Hand
-  
-  attr_reader :name, :hand, :point_total
+
+  attr_reader :name, :point_total
 
   def initialize
-    #states: hand (of cards), point total of hand, name?
-    #busted or not
     @name = 'Player'
     @hand = []
-    @point_total = nil
+    @point_total = 0
+  end
+
+  def choose
+    input = nil
+    loop do
+      puts
+      puts "Type 'h' to hit or 's' to stay."
+      input = gets.chomp.downcase
+      break if ['h', 's'].include?(input)
+      puts 'Invalid entry.'
+    end
+    input
   end
 end
 
 class Dealer
   include Hand
-  
-  attr_reader :name, :hand
+
+  attr_reader :name, :point_total
 
   def initialize
-    #states: hand (of cards), point total of hand, name?
-    #busted or not
     @name = 'Dealer'
     @hand = []
+    @point_total = 0
+  end
+
+  def at_limit?
+    @point_total >= 17
   end
 end
 
@@ -173,13 +226,7 @@ class Deck
   VALUES = %w(2 3 4 5 6 7 8 9 10 Jack King Queen Ace)
 
   def initialize
-    #states: deck of cards (array of card objects/structs)
     @deck = create_deck
-  end
-  
-  def to_s
-    # deck.map(&:to_s)
-    # deck.size
   end
 
   def deal(participant, number = 1)
@@ -198,26 +245,28 @@ class Deck
     end
     deck.shuffle
   end
-
-  def shuffle
-  end
 end
 
 class Card
+  attr_reader :value
+
   def initialize(suit, value)
     @suit = suit
     @value = value
-    # @points = assign_points
     @hidden = false
   end
 
   def to_s
-    hidden? ? 'Unknown' : "#{value} of #{suit}"
+    hidden? ? 'Unknown card' : "#{value} of #{suit}"
+  end
+
+  def hide_card
+    @hidden = true
   end
 
   private
 
-  attr_reader :value, :suit, :hidden
+  attr_reader :suit, :hidden
 
   def hidden?
     hidden
