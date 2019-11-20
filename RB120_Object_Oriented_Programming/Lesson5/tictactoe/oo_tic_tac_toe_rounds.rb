@@ -1,14 +1,11 @@
 class TTTGame
-  SCORE_TO_WIN = 2
+  SCORE_TO_WIN = 5
 
   def initialize
-    @board = Board.new
     @human = Human.new
     @computer = Computer.new
     # 'human', 'computer', or 'choose'
     @first_to_move = 'choose'
-    @current_marker = nil
-    @round_winner = nil
   end
 
   def play
@@ -22,7 +19,7 @@ class TTTGame
       play_round
       display_game_result
       break unless play_again?
-      reset(new_game: true)
+      reset
       display_play_again_message
     end
     display_goodbye_message
@@ -30,10 +27,12 @@ class TTTGame
 
   private
 
-  attr_reader :board, :human, :computer, :current_player
+  attr_reader :human, :computer
+
+  attr_accessor :first_to_move
 
   def choose_first_to_move
-    @current_marker = case @first_to_move
+    @current_marker = case first_to_move
                       when 'human'
                         human.marker
                       when 'computer'
@@ -41,7 +40,7 @@ class TTTGame
                       when 'choose'
                         human.choose_first_mover(computer.marker)
                       end
-    @first_to_move = @current_marker
+    self.first_to_move = @current_marker
   end
 
   def choose_markers
@@ -59,85 +58,8 @@ class TTTGame
   end
 
   def play_round
-    loop do
-      display_board
-      loop do
-        current_player_moves
-        break if board.someone_won_round? || board.full?
-        clear_screen_and_display_board if human_turn?
-      end
-      set_round_winner_and_score
-      display_round_result
-      break if someone_won_game?
-      start_next_round
-    end
-  end
-
-  def display_board
-    message = "#{human.name} is a #{human.marker}. "
-    message += "#{computer.name} is a #{computer.marker}."
-    puts message
-    puts ""
-    board.draw
-    puts ""
-  end
-
-  def clear_screen_and_display_board
-    clear
-    display_board
-  end
-
-  def human_turn?
-    @current_marker == human.marker
-  end
-
-  def current_player_moves
-    if human_turn?
-      human.moves(board)
-    else
-      computer.moves(board, human.marker, computer.marker)
-    end
-
-    @current_marker = human_turn? ? computer.marker : human.marker
-  end
-
-  def set_round_winner_and_score
-    @round_winner = case board.winning_marker
-                    when human.marker then human
-                    when computer.marker then computer
-                    end
-    @round_winner&.increase_score
-  end
-
-  def someone_won_game?
-    human.score >= SCORE_TO_WIN || computer.score >= SCORE_TO_WIN
-  end
-
-  def display_round_result
-    clear_screen_and_display_board
-    case @round_winner
-    when human
-      puts "#{human.name} won the round!"
-    when computer
-      puts "#{computer.name} won the round!"
-    else
-      puts "Tie round; the board is full!"
-    end
-    display_score
-  end
-
-  def display_score
-    message = "The score is #{human.name}-#{human.score} "
-    message += "to #{computer.name}-#{computer.score}."
-    puts
-    puts message
-    puts
-  end
-
-  def start_next_round
-    puts "Press enter to start new round."
-    gets.chomp
-    reset
+    current_round = Round.new(human, computer, first_to_move)
+    current_round.play
   end
 
   def display_game_result
@@ -167,19 +89,124 @@ class TTTGame
     puts "Thanks for playing Tic Tac Toe! Goodbye!"
   end
 
-  def reset(new_game: false)
-    board.reset
-    @current_marker = @first_to_move
-    if new_game
-      human.reset_score
-      computer.reset_score
-    end
+  def reset
+    @current_marker = first_to_move
+    human.reset_score
+    computer.reset_score
     clear
   end
 
   def display_play_again_message
     puts "Let's play again!"
     puts ""
+  end
+end
+
+class Round
+  def initialize(human, computer, first_to_move)
+    @board = Board.new
+    @human = human
+    @computer = computer
+    @first_to_move = first_to_move
+    @current_marker = first_to_move
+    @round_winner = nil
+  end
+
+  def play
+    loop do
+      display_board
+      loop do
+        current_player_moves
+        break if board.someone_won_round? || board.full?
+        clear_screen_and_display_board if human_turn?
+      end
+      set_round_winner_and_score
+      display_round_result
+      break if someone_won_game?
+      start_next_round
+    end
+  end
+
+  private
+
+  attr_reader :round_winner, :human, :computer, :board, :first_to_move
+
+  def display_board
+    message = "#{human.name} is a #{human.marker}. "
+    message += "#{computer.name} is a #{computer.marker}."
+    puts message
+    puts ""
+    board.draw
+    puts ""
+  end
+
+  def clear_screen_and_display_board
+    clear
+    display_board
+  end
+
+  def clear
+    system('clear')
+  end
+
+  def human_turn?
+    @current_marker == human.marker
+  end
+
+  def current_player_moves
+    if human_turn?
+      human.moves(board)
+    else
+      computer.moves(board, human.marker, computer.marker)
+    end
+
+    @current_marker = human_turn? ? computer.marker : human.marker
+  end
+
+  def set_round_winner_and_score
+    @round_winner = case board.winning_marker
+                    when human.marker then human
+                    when computer.marker then computer
+                    end
+    @round_winner&.increase_score
+  end
+
+  def someone_won_game?
+    winning_score = TTTGame::SCORE_TO_WIN
+    human.score >= winning_score || computer.score >= winning_score
+  end
+
+  def display_round_result
+    clear_screen_and_display_board
+    case @round_winner
+    when human
+      puts "#{human.name} won the round!"
+    when computer
+      puts "#{computer.name} won the round!"
+    else
+      puts "Tie round; the board is full!"
+    end
+    display_score
+  end
+
+  def display_score
+    message = "The score is #{human.name}-#{human.score} "
+    message += "to #{computer.name}-#{computer.score}."
+    puts
+    puts message
+    puts
+  end
+
+  def start_next_round
+    puts "Press enter to start new round."
+    gets.chomp
+    reset
+  end
+
+  def reset
+    board.reset
+    @current_marker = first_to_move
+    clear
   end
 end
 
