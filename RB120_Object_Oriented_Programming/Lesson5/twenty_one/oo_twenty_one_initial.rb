@@ -73,10 +73,10 @@ class Game
     end
   end
 
-  def handle_busts(active, inactive)
-    return unless active.busted?
-    self.winner = inactive
-    display_busted(active.name)
+  def handle_busts(active_player, inactive_player)
+    return unless active_player.busted?
+    self.winner = inactive_player
+    display_busted(active_player.name)
   end
 
   def display_busted(name)
