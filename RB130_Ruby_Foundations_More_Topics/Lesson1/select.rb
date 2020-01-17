@@ -9,19 +9,32 @@ ensure
   $stderr.reopen original_stderr
 end
 
+# class Array
+#   def my_select
+#     return [] unless block_given? 
+#     selections = []
+#     self.each do |elem|
+#       selections << elem if suppress_output{yield(elem)}
+#     end
+#     selections
+#   end
+# end
+
 class Array
   def my_select
     return [] unless block_given? 
     selections = []
-    self.each do |elem|
-      selections << elem if suppress_output{yield(elem)}
-    end
+    suppress_output{self.each do |elem|
+      selections << elem if yield(elem)
+    end}
     selections
   end
 end
 
 arr = [1, 2, 3, 4, 5]
-
+time1 = Time.now
 p arr.my_select { |num| num.odd? }
 p arr.my_select { |num| puts num }
 p arr.my_select { |num| num + 1}
+time2 = Time.now
+puts "Duration #{time2 - time1}"
