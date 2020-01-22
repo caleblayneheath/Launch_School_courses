@@ -31,6 +31,7 @@ class Todo
       description == otherTodo.description &&
       done == otherTodo.done
   end
+
 end
 
 class TodoList
@@ -42,18 +43,20 @@ class TodoList
   end
 
   def add(other)
-    begin
-      raise TypeError.new('Can only add Todo ojbects') unless other.class == Todo
+    # below doesn't handle the exception
+    # raise TypeError, 'Can only add Todo objects' unless other.instance_of? Todo
+    # todos << other
+
+    # begin
+      raise TypeError, 'Can only add Todo objects' unless other.instance_of? Todo
       todos << other
-    rescue TypeError => e
-      puts e.message
-    end
-    self
+    # rescue TypeError => e
+    #   puts e.message
+    # end
+    # self
   end
 
-  def <<(other)
-    add(other)
-  end
+  alias_method :<<, :add
 
   def size
     todos.size
@@ -68,7 +71,8 @@ class TodoList
   end
 
   def to_a # does this need to be a shallow or deep copy?
-    Array.new(todos)
+    # Array.new(todos)
+    todos.clone
   end
 
   def done?
@@ -76,27 +80,35 @@ class TodoList
   end
 
   def item_at(index)
-    begin
+    # begin
       todos.fetch(index)
-    rescue IndexError => e
-      puts e.class
-    end
+    # rescue IndexError => e
+    #   puts e.class
+    # end
   end
 
   def mark_done_at(index)
-    begin
+    # begin
       todos.fetch(index).done!
-    rescue IndexError => e
-      puts e.class
-    end
+    # rescue IndexError => e
+    #   puts e.class
+    # end
+  end
+
+  def mark_undone_at(index)
+    # begin
+      todos.fetch(index).undone!
+    # rescue IndexError => e
+    #   puts e.class
+    # end
   end
 
   def remove_at(index)
-    begin
+    # begin
       todos.delete_at(index) if todos.fetch(index)
-    rescue IndexError => e
-      puts e.class
-    end
+    # rescue IndexError => e
+    #   puts e.class
+    # end
   end
 
   def done!
@@ -104,6 +116,8 @@ class TodoList
       todo.done! unless todo.done?
     end
   end
+
+  alias_method :mark_all_done, :done!
 
   def shift
     todos.shift
@@ -117,100 +131,75 @@ class TodoList
     output = ''
     output += "#{title}\n"
     todos.each { |todo| output += "#{todo.to_s}\n" }
-    output
+    output.chomp
+  end
+
+  def each
+    todos.each do |todo|
+      yield(todo)
+    end
+    self
+  end 
+
+  def select
+    list = TodoList.new(title)
+    each do |todo|
+      list << todo if yield(todo)
+    end
+    list
+  end
+
+  def find_by_title(string)
+    # result = nil
+    # each do |todo|
+    #   if todo.title == string
+    #     result = todo
+    #     break
+    #   end
+    # end
+    # result
+    select { |todo| todo.title == string }.first
+  end
+
+  def all_done
+    select { |todo| todo.done? }
+  end
+
+  def all_not_done
+    select { |todo| !todo.done? }
+  end
+
+  def mark_done(string)
+    result = find_by_title(string)
+    result.done! if result
+    # find_by_title(string) && find_by_title(string).done!
+  end
+
+  # def mark_all_done
+  #   each { |todo| todo.done! }
+  # end
+
+  def mark_all_undone
+    each { |todo| todo.undone! }
   end
 
   private
   
   attr_reader :todos
 
-  def valid_index?(index)
-    (0..self.size).include?(index)
-  end
 end
 
-# given
-todo1 = Todo.new("Buy milk")
-todo2 = Todo.new("Clean room")
-todo3 = Todo.new("Go to gym")
-list = TodoList.new("Today's Todos")
+# todo1 = Todo.new("Buy milk")
+# todo2 = Todo.new("Clean room")
+# todo3 = Todo.new("Go to gym")
 
-# ---- Adding to the list -----
-
-# add
-list.add(todo1)                 # adds todo1 to end of list, returns list
-list.add(todo2)                 # adds todo2 to end of list, returns list
-list.add(todo3)                 # adds todo3 to end of list, returns list
-list.add(1)                     # raises TypeError with message "Can only add Todo objects"
-
-# <<
-# same behavior as add
-
-# ---- Interrogating the list -----
-
-# size
-list.size                       # returns 3
-
-# first
-list.first                      # returns todo1, which is the first item in the list
-
-# last
-list.last                       # returns todo3, which is the last item in the list
-
-#to_a
-list.to_a                      # returns an array of all items in the list
-
-#done?
-list.done?                     # returns true if all todos in the list are done, otherwise false
-
-# ---- Retrieving an item in the list ----
-
-# item_at
-list.item_at                    # raises ArgumentError
-list.item_at(1)                 # returns 2nd item in list (zero based index)
-list.item_at(100)               # raises IndexError
-
-# ---- Marking items in the list -----
-
-# mark_done_at
-list.mark_done_at               # raises ArgumentError
-list.mark_done_at(1)            # marks the 2nd item as done
-list.mark_done_at(100)          # raises IndexError
-
-# mark_undone_at
-list.mark_undone_at             # raises ArgumentError
-list.mark_undone_at(1)          # marks the 2nd item as not done,
-list.mark_undone_at(100)        # raises IndexError
-
-# done!
-list.done!                      # marks all items as done
-
-# ---- Deleting from the list -----
-
-# shift
-list.shift                      # removes and returns the first item in list
-
-# pop
-list.pop                        # removes and returns the last item in list
-
-# remove_at
-list.remove_at                  # raises ArgumentError
-list.remove_at(1)               # removes and returns the 2nd item
-list.remove_at(100)             # raises IndexError
-
-# ---- Outputting the list -----
-
-# to_s
-list.to_s                      # returns string representation of the list
-
-# ---- Today's Todos ----
-# [ ] Buy milk
-# [ ] Clean room
-# [ ] Go to gym
-
-# or, if any todos are done
-
-# ---- Today's Todos ----
-# [ ] Buy milk
-# [X] Clean room
-# [ ] Go to gym
+# list = TodoList.new("Today's Todos")
+# list.add(todo1)
+# list.add(todo2)
+# list.add(todo3)
+# list.mark_done_at(1)
+# # # list << 4
+# puts list.to_s
+# list.mark_all_undone
+# p list.all_done
+# p list.all_not_done
