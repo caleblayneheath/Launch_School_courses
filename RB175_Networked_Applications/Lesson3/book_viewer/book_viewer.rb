@@ -2,18 +2,90 @@ require 'tilt/erubis'
 require "sinatra"
 require "sinatra/reloader" # application reloads files every time a page is loaded, very nice apparently?
 
+# filter
+# defined for every path
+before do
+  @contents = File.readlines "data/toc.txt"
+end
+
+# methods made available in templates are put here
+helpers do
+  def in_paragraphs(text)
+    text.split("\n\n").map.with_index do |paragraph, index|
+      "<p id=paragraph#{index}>#{paragraph}</p>"
+    end.join
+  end
+end
+
 # when path is /, read template file and send returned string to browser when GET
 get "/" do
   @title = "The Adventures of Sherlock Holmes"
-  @contents = File.readlines "data/toc.txt"
 
   erb :home
 end
 
-get "/chapters/1" do
-  @title = "Chapter 1"
-  @contents = File.readlines "data/toc.txt"
-  @chapter = File.readlines "data/chp1.txt"
+get "/chapters/:number" do
+  number = params[:number].to_i
+  chapter_name = @contents[number - 1]
+  
+  redirect "/" unless (1..@contents.size).cover? number
+  
+  @title = "Chapter #{number}: #{chapter_name}"
+  @chapter = File.read "data/chp#{number}.txt"
 
   erb :chapter
+end
+
+#define function for search here
+def each_chapter
+  @contents.each_with_index do |name, index|
+    number = index + 1
+    contents = File.read("data/chp#{number}.txt")
+    yield number, name, contents
+  end
+end
+
+# def chapters_matching(query)
+#   results = []
+
+#   return results if !query || query.empty?
+
+#   each_chapter do |number, name, contents|
+#     results << { number: number, name: name } if contents.include?(query)
+#   end
+
+#   results
+# end
+
+
+def chapters_matching(query)
+  results = []
+
+  return results if !query || query.empty?
+
+  each_chapter do |number, name, contents|
+    matches = paragraphs_matching(contents, query)
+    results << { number: number, name: name , paragraphs: matches} unless matches.empty?
+  end
+
+  results
+end
+
+def paragraphs_matching(text, query)
+  results = {}
+
+  text.split("\n\n").each_with_index do |paragraph, index|
+    results[index] = paragraph if paragraph.include?(query)
+  end
+
+  results
+end
+
+get "/search" do
+  @results = chapters_matching(params[:query])
+  erb :search
+end
+
+not_found do
+  redirect "/"
 end

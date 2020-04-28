@@ -1,18 +1,10 @@
 require 'sinatra'
 require 'sinatra/reloader'
+require 'tilt/erubis'
 
-get "/" do
-  sort = params['sort']
-  
-  contents = Dir.glob("public/*").map do |filename|
-    shortname = File.basename(filename)
-    "<p><a href=#{shortname}>#{shortname}</a></p>"
-  end
+get "/" do 
+  @files = Dir.glob("public/*").map { |file| File.basename(file) }.sort
+  @files.reverse! if params[:sort] == 'desc'
 
-  case sort
-  when 'reverse'
-    contents.reverse.append("<p><a href='/'>Sort alphabetically.</a></p>")
-  else
-    contents.append("<p><a href='/?sort=reverse'>Sort reverse alphabetically.</a></p>")
-  end
+  erb :ddi
 end
