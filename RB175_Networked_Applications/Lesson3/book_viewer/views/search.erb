@@ -20,7 +20,7 @@
           <% address = "/chapters/#{result[:number]}#paragraph#{id}" %>
           <li>
             <a href=<%= address %>> 
-              <%= paragraph %>
+              <%= highlight(paragraph, params[:query]) %>
             </a>
           </li>
         <% end %>

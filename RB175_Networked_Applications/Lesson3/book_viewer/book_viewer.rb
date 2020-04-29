@@ -15,6 +15,10 @@ helpers do
       "<p id=paragraph#{index}>#{paragraph}</p>"
     end.join
   end
+
+  def highlight(text, term)
+    text.gsub(term, "<strong>#{term}</strong>")
+  end
 end
 
 # when path is /, read template file and send returned string to browser when GET
@@ -45,19 +49,6 @@ def each_chapter
   end
 end
 
-# def chapters_matching(query)
-#   results = []
-
-#   return results if !query || query.empty?
-
-#   each_chapter do |number, name, contents|
-#     results << { number: number, name: name } if contents.include?(query)
-#   end
-
-#   results
-# end
-
-
 def chapters_matching(query)
   results = []
 
@@ -72,13 +63,13 @@ def chapters_matching(query)
 end
 
 def paragraphs_matching(text, query)
-  results = {}
+  paragraphs = {}
 
   text.split("\n\n").each_with_index do |paragraph, index|
-    results[index] = paragraph if paragraph.include?(query)
+    paragraphs[index] = paragraph if paragraph.include?(query)
   end
 
-  results
+  paragraphs
 end
 
 get "/search" do
