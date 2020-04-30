@@ -1,6 +1,9 @@
 require 'tilt/erubis'
 require "sinatra"
-require "sinatra/reloader" # application reloads files every time a page is loaded, very nice apparently?
+# application reloads files every time a page is loaded, very nice apparently?
+# production? and development? are Sinatra methods that check RACK_ENV environment variables
+# heroku sets the var to automatically to production
+require "sinatra/reloader" if development?
 
 # filter
 # defined for every path
