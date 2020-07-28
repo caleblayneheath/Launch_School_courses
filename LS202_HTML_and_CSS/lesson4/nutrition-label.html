@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Nutrition Facts Label</title>
+  <meta charset="utf-8" />
+  <style>
+    .sub {
+      text-indent: 1rem;
+    }
+
+    html {
+      font-size: 28px;
+      font-family: "Helvetica", "Arial", sans-serif;
+    }
+
+    article {
+      border: 2px solid black;
+      box-sizing: border-box;
+      padding: 10px 15px 15px 15px;
+      width: 680px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    h2 {
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    td:nth-child(2) {
+      text-align: right;
+    }
+
+    dt {
+      clear: left;
+      float: left;
+      text-align: right;
+    }
+
+    dt::after {
+      content: " ";
+      white-space: pre;
+    }
+
+    dd {
+      margin: 0;
+    }
+
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Nutrition Facts</h1>
+      <p>Serving Size 2/3 cup (55g)</p>
+      <p>Servings Per Container About 8</p>
+      <h2>Amount Per Serving</h2>
+      <dl>
+        <dt>Calories</dt>
+        <dd>230</dd>
+      </dt>
+      <dl>
+        <dt>Calories from Fat</dt>
+        <dd>40</dd>
+      </dl>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <td></td>
+          <th scope="col">% Daily Value*</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <dl>
+              <dt>Total Fat</dt>
+              <dd>8g</dd>
+            </dl>
+          </td>
+          <td>12%</td>
+        </tr>
+        <tr>
+          <td class="sub">Saturated Fat 1g</td>
+          <td>5%</td>
+        </tr>
+        <tr>
+          <td class="sub">Trans Fat 0g</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Cholesterol 0mg</td>
+          <td>0%</td>
+        </tr>
+        <tr>
+          <td>Sodium 160mg</td>
+          <td>7%</td>
+        </tr>
+        <tr>
+          <td>Total Carbohydrate 37g</td>
+          <td>12%</td>
+        </tr>
+        <tr>
+          <td class="sub">Dietary Fiber 4g</td>
+          <td>16%</td>
+        </tr>
+        <tr>
+          <td class="sub">Sugars 1g</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Protein 3g</td>
+          <tr></td>
+        </tr>
+      </tbody>
+      <tbody>
+        <tr>
+          <td>Vitamin A</td>
+          <td>10%</td>
+        </tr>
+        <tr>
+          <td>Vitamin C</td>
+          <td>8%</td>
+        </tr>
+        <tr>
+          <td>Calcium</td>
+          <td>20%</td>
+        </tr>
+        <tr>
+          <td>Iron</td>
+          <td>45%</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">
+          * Percent Daily Values are based on a 2,000 calorie diet. Your daily
+    value may be higher or lower depending on your calorie needs.
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th scope="col">Calories:</th>
+          <th scope="col">2,000</th>
+          <th scope="col">2,500</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Total Fat</th>
+          <td>Less than</td>
+          <td>65g</td>
+          <td>80g</td>
+        </tr>
+        <tr>
+          <th class="sub" scope="row">Sat Fat</th>
+          <td>Less than</td>
+          <td>20g</td>
+          <td>25g</td>
+        </tr>
+        <tr>
+          <th scope="row">Cholesterol</th>
+          <td>Less than</td>
+          <td>300mg</td>
+          <td>300mg</td>
+        </tr>
+        <tr>
+          <th scope="row">Sodium</th>
+          <td>Less than</td>
+          <td>2,400mg</td>
+          <td>2,400mg</td>
+        </tr>
+        <tr>
+          <th scope="row">Total Carbohydrate</th>
+          <td></td>
+          <td>300g</td>
+          <td>375g</td>
+        </tr>
+        <tr>
+          <th class="sub" scope="row">Dietary Fiber</th>
+          <td></td>
+          <td>25g</td>
+          <td>30g</td>
+        </tr>
+      </tbody>
+    </table>
+  </article>
+</body>
+</html>
