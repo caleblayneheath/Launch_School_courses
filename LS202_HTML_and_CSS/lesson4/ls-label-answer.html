@@ -4,239 +4,128 @@
   <title>Nutrition Facts Label</title>
   <meta charset="utf-8" />
   <style>
-    html {
-      font-size: 28px;
-      font-family: "Helvetica", "Arial", sans-serif;
+    html, body {
+      font: 28px helvetica, arial, sans-serif;
+      background: #ffffff;
+    }
+
+    article {
+      width: 680px;
+      padding: 10px 15px 15px 15px;
+      border: 2px solid #000000;
+      box-sizing: border-box;
+    }
+
+    header {
+      margin-bottom: 10px;
+      border-bottom: 15px solid #000000;
+    }
+
+    h1 {
+      padding: 0;
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    h2 {
+      padding: 10px 0;
+      margin: 5px 0 0 0;
+      font-size: 1rem;
+      border-top: 30px solid #000000;
+      border-bottom: 1px solid #000000;
+    }
+
+    dl {
+      padding: 0;
+      margin: 0;
+    }
+    dt {
+      display: inline;
+      font-weight: 600;
+    }
+    dd {
+      display: inline;
+      margin: 0;
     }
 
     sup {
       vertical-align: 3px;
     }
 
-    article {
-      border: 2px solid black;
-      box-sizing: border-box;
-      padding: 10px 15px 15px 15px;
-      width: 680px;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin: 0;
-      padding: 0;
-    }
-
-    h2 {
-      border-bottom: 1px solid black;
-      border-top: 30px solid black; 
-      font-size: 1rem;
-      margin: 5px 0 0 0;
-      padding: 10px 0;
-    }
-
-    header {
-      border-bottom: 15px solid black;
-      margin-bottom: 10px;
-    }
-
     header p {
       margin: 0;
     }
-    
+
     header dl {
       display: inline-block;
-      padding: 5px 0;
       width: 50%;
+      padding: 5px 0;
     }
-
-    header dt {
-      display: inline;
-    }
-
-    header dl + dl {
-      text-align: right;
-    }
-
+    header dl + dl { text-align: right; }
     header dl + dl dt {
-      font-weight: normal;
-    }
-
-    dl {
-      margin: 0;
-      padding; 0;
-    }
-
-    dt {
-      display: inline;
-      font-weight: bold;
-    }
-
-    td.indent {
-      border-top: 0;
-      width: 1rem;
-    }
-
-    td dt {
-      font-weight: normal;
-    }
-
-    dd {
-      display: inline;
-      margin: 0;
+      font-weight: 500;
     }
 
     table {
-      border-collapse: collapse;
-      border-spacing: 0;
       width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
     }
 
-    thead th {
-      text-align: right;
-    }
-
+    thead th { text-align: right; }
     tbody th {
-      border-top: 1px solid black;
+      padding: 2px 0;
       font-weight: normal;
-      padding: 2px 0;
       text-align: left;
+      border-top: 1px solid #000000;
     }
-
     tbody td {
-      border-top: 1px solid black;
       padding: 2px 0;
+      border-top: 1px solid #000000;
     }
-  
-    tbody td:last-of-type {
-      font-weight: bold;
+    tr td:last-of-type {
+      font-weight: 600;
       text-align: right;
     }
-
-    tbody + tbody {
-      border-top: 20px solid black;
+    td.indent {
+      width: 1rem;
+      border-top: none;
     }
-
-    tbody + tbody td:last-of-type {
+    td dt { font-weight: normal; }
+    tbody + tbody tr:first-of-type td { border-top: 20px solid #000000; }
+    tbody + tbody tr td:last-of-type {
       font-weight: normal;
     }
-
-    tfoot td {
-      border-top: 1px solid black;
-      font-size: 0.9rem;
-      padding: 0.5rem 0 0.5rem 0.7rem;
-      text-indent: -0.7rem;
-      /* more */
-    }
-
-    table + table {
-      font-size: 0.8rem;
-    }
-
-    table + table td {
-      border: 0;
-    }
-
-    table + table th {
-      border: 0;
+    tfoot td:last-of-type {
+      padding: .5rem 0 .5rem .7rem;
+      font-size: .9rem;
       font-weight: normal;
       text-align: left;
-      width: 37%;
+      text-indent: -.7rem;
+      border-top: 1px solid #000000;
     }
 
+    table + table { font-size: .8rem; }
+    table + table thead th {
+      width: 37%;
+      font-weight: normal;
+      text-align: left;
+      border-bottom: 1px solid #000000;
+    }
     table + table thead th + th {
       width: 21%;
     }
-
-    table + table thead tr:first-child {
-      border-bottom: 1px solid black;
+    table + table td {
+      border: none;
     }
-
-    table + table td:last-child {
+    table + table tr td:last-of-type {
       font-weight: normal;
       text-align: left;
     }
-
-    table + table th.indent {
+    table + table td.indent {
       width: auto;
-      text-indent: 1.2rem; 
+      text-indent: 1.2rem;
     }
-/*
-    header dl:last-child {
-      font-weight: normal;
-      float: right;
-      text-align: right;
-    }
-
-    header dl:last-child dt {
-      font-weight: normal;
-    }
-
-    header dt {
-      font-weight: bold;
-    }
-
-    dl {
-      margin: 0;
-      text-align: left;
-    }
-
-    dt {
-      clear: left;
-      display: inline;
-      text-align: right;
-    }
-    
-
-    dd {
-      display: inline;
-      font-weight: normal;
-      margin: 0;
-    }
-
-    td {
-      border-top: 1px solid black;
-    }
-
-    th {
-      border-top: 1px solid black;
-      text-align: left;
-    }
-
-    th:only-child {
-      text-align: right;
-    }
-
-    thead th:only-child {
-      border: 0;
-    }
-    
-    tbody:first-of-type td:last-child {
-      font-weight: bold; 
-      text-align: right;
-    }
-
-    tbody td:last-child {
-      text-align: right;
-    }
-
-    tbody:nth-child(3) {
-      border-top: 20px solid black;
-    }
-    
-    table:nth-child(3) {
-      font-weight: normal;
-    }
-
-    tfoot td {
-      font-size: 0.9rem;
-      padding: 10px;
-      text-indent: -0.5rem;
-    }
-
-    table:last-child td, th {
-      font-weight: normal;
-    }
-*/
   </style>
 </head>
 <body>
@@ -249,7 +138,8 @@
       <dl>
         <dt>Calories</dt>
         <dd>230</dd>
-      </dl><dl>
+      </dl>
+      <dl>
         <dt>Calories from Fat</dt>
         <dd>40</dd>
       </dl>
@@ -257,7 +147,7 @@
     <table>
       <thead>
         <tr>
-          <th colspan="3" scope="col">% Daily Value<sup>*</sup></th>
+          <th colspan="3" scope="col">% Daily Value*</th>
         </tr>
       </thead>
       <tbody>
