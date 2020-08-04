@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Forms 2</title>
+  <meta charset="utf-8" />
+  <style>
+  
+  </style>
+</head>
+<body>
+  <form action="#" method="post">
+    <fieldset>
+      <dl>
+        <dt><label for="first_name">First Name</label></dt>
+        <dd>
+          <input type="text" name="first_name" id="first_name" required />
+        </dd>
+
+        <dt><label for="last_name">Last Name</label></dt>
+        <dd>
+          <input type="text" name="last_name" id="last_name" required />
+        </dd>
+
+        <dt><label for="email">Email Address</label></dt>
+        <dd>
+          <input type="email" name="email" id="email" placeholder="name@domain" autocomplete="off" autocorrect="off" autocapitalize="none" required />
+        </dd>
+
+        <dt><label for="phone">Phone Number</label></dt>
+        <dd>
+          <input type="tel" name="phone" id="phone" placeholder="(###)###-####" required />
+        </dd>
+      </dl>
+        
+      <input type="submit" value="Send" />
+
+    </fieldset>
+  </form>
+</body>
+</html>

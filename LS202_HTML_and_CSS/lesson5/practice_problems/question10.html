@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Forms 10</title>
+  <meta charset="utf-8" />
+</head>
+<body>
+  <form action="#" method="post">
+    <fieldset>
+      <dl>
+        <dt><label for="title">Movie</label></dt>
+        <dd>
+          <select name="title" id="title" size="4">
+            <option value="Looper">Looper</option>
+            <option value="Frozen">Frozen</option>
+            <option value="Tommy Boy">Tommy Boy</option>
+            <option value="Alien" selected>Alien</option>
+          </select>
+        </dd>
+
+        <dt><label for="rating">Rating</label></dt>
+        <dd>
+          <input type="number" name="rating" id="rating" min="1" max="5" step="1" />
+        </dd>
+      </dl>
+     
+      <div>
+        <label>
+          <input type="checkbox" name="favorite" checked />
+          Add to my favorites
+        </label>
+      </div>
+
+      <input type="submit" value="Rate movie" />
+    </fieldset>
+  </form>
+</body>
+</html>
+
+
