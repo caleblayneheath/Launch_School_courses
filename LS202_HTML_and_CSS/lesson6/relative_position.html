@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Relative Position</title>
+  <meta charset="utf-8" />
+  <style>
+    section {
+      border: 1px solid gray;
+      padding: 70px 10px;
+    }
+
+    aside {
+      border: 1px solid black;
+      display: inline-block;
+      height: 100px;
+      line-height: 100px;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      width: 100px;
+    }
+
+    .normal {
+      background-color: yellow;
+    }
+
+    .shifted {
+      position: relative;
+    }
+
+    .pos {
+      background-color: cyan;
+      left: 50px;
+    }
+
+    .neg {
+      background-color: lightgreen;
+      left: -00px;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <aside class="normal">normal</aside>
+    <aside class="shifted pos">top</aside>
+    <aside class="shifted neg">-top</aside>
+    <aside class="normal">normal</aside>
+  </section>
+</body>
+</html>

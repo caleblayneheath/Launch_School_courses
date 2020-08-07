@@ -51,25 +51,27 @@ dl.partial label {
 }
 
 dl.first_name {
-  padding-right: 1rem;
+  padding-right: 0.5rem;
   width: 50%;
 }
 
 dl.last_name {
+  padding-left: 0.5rem;
   width: 50%;
 }
 
 dl.city {
-  padding-right: 1rem;
+  padding-right: 0.5rem;
   width: 50%;
 }
 
 dl.state {
-  padding-right: 1rem;
+  padding: 0 0.5rem;
   width: 10%;
 }
 
 dl.zipcode {
+  padding-left: 0.5rem;
   width: 40%;
 }
 
