@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Fluid Layout</title>
+  <meta charset="utf-8" />
+  <style>
+    html {
+      font-size: 16px;
+    }
+
+    body, article, p {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0.5rem;
+    }
+
+    main {
+      clear: both;
+      max-width: 1000px;
+      min-width: 500px;
+      overflow: hidden;
+      padding-bottom: 1.5rem;
+    }
+
+    .content,
+    .sidebar {
+      box-sizing: border-box;
+      padding: 20px 30px;
+    }
+
+    .content {
+      background-color: pink;
+      box-sizing: border-box;
+      float: left;
+      width: 70%;
+    }
+
+    .sidebar {
+      background-color: cyan;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article class="content">
+      Enim Lorem aliqua anim nulla labore nulla ullamco. Deserunt fugiat duis ex dolor. Ex laboris ad officia minim quis.  Incididunt eu reprehenderit ullamco eiusmod dolor pariatur mollit qui. Officia aliqua velit deserunt adipisicing duis minim minim tempor.
+    </article>
+
+    <aside class="sidebar">
+      Proident cillum ad cillum minim magna. Duis nulla est est non sunt. Est culpa laborum velit dolor.
+    </aside>
+
+</body>
+</html>
