@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>My Photo Gallery</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font: normal 16px Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      justify-content: center;
+      background-color: #151515;
+      color: white;
+      display: flex;
+    }
+
+    div.wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    section.gallery   {
+      background-color: #333;
+      box-sizing: border-box;
+      margin: 0 auto;
+      max-width: 1000px;
+      padding: 25px 20px 20px;
+    }
+
+    .gallery h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 1.3rem 0;
+      text-align: center;
+    }
+
+    .main img {
+      border: 15px solid white;
+      width: 100%;
+    }
+
+    figcaption {
+      padding: 5px 0;
+    }
+
+    footer.thumbnail {
+      box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+      margin: 20px -15px;
+    }
+
+    .thumbnail img {
+      background-color: white;
+      border-width: 0 15px 0 15px;
+      border-style: solid;
+      border-color: #333;
+      margin-bottom: 15px;
+      padding: 3px;
+      width: 25%;
+    }
+
+    @media screen and (max-width: 899px) {
+      .thumbnail img {
+        width: 33.3333%;
+      }
+    }
+
+    @media screen and (max-width: 599px) {
+      .thumbnail img {
+        width: 50%;
+      }
+    }
+
+    @media screen and (min-width: 1280px) {
+      div.wrapper {
+        flex-direction: row;
+      }
+
+      section.gallery {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .main img {
+        max-width: 950px;
+        width: auto;
+      }
+      
+      footer.thumbnail {
+        flex-direction: column;
+        margin: 0 0 0 40px;
+      }
+
+      .thumbnail img {
+        width: 100%;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <section class="gallery">
+    <h1>My Photo Gallery</h1>
+    <div class="wrapper">
+    <section class="main">
+      <figure>
+        <img src="1200x900.png" alt="" />
+        <figcaption>Example photo</figcaption>
+      </figure>
+    </section>
+    <footer class="thumbnail">
+      <img src="1200x900.png" alt="" />
+      <img src="1200x900.png" alt="" />
+      <img src="1200x900.png" alt="" />
+      <img src="1200x900.png" alt="" />
+      <img src="1200x900.png" alt="" />
+      <img src="1200x900.png" alt="" />
+      <img src="1200x900.png" alt="" />
+      <img src="1200x900.png" alt="" />
+    </footer>
+    </div>
+  </section>
+</body>
+</html>
