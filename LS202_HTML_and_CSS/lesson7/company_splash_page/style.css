@@ -1,0 +1,66 @@
+body {
+  align-items: center;
+  background: url("bg_body.gif");
+  color: #45494d;
+  display: flex;
+  flex-direction: column;
+  font: 400 20px Avenir, "Nunito Sans", Helvetica, Arial, sans-serif;
+}
+
+header {
+  box-sizing: border-box;
+  margin: 160px 0 45px 0;
+  width: 1000px;
+}
+
+header h1 {
+  text-align: center;
+}
+
+main {
+  background: white;
+  box-sizing: border-box;
+  margin: 45px 0 0 0;
+  padding: 0 90px 0 90px;
+  text-align: center;
+  width: 1000px;
+}
+
+article {
+  padding: 110px 0 70px 0;
+}
+
+main h2 {
+  font-size: 36px;
+  font-weight: 600;
+  padding: 0 0 15px 0;
+}
+
+main h2::before, main h2::after {
+  content: "\2022";
+  padding: 0 25px;
+}
+
+main h3 {
+  color: #3e98b2;
+  font-size: 24px;
+  font-weight: 800;
+  padding: 15px 0;
+}
+
+main p {
+  padding: 15px 0 0 0;
+}
+
+footer {
+  background: #e7e7e7;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  margin: 0 0 150px 0;
+  width: 1000px;
+}
+
+footer a {
+  padding: 30px 60px;
+}
