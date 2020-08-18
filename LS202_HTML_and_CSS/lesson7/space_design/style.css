@@ -1,16 +1,17 @@
 body {
   align-items: center;
-  background: url("images/bg_body.gif");
+  background: #2f2840 url("images/bg_body.gif") 50% 0 repeat;
   color: #45494d;
   display: flex;
   flex-direction: column;
-  font: 400 20px Avenir, "Nunito Sans", Helvetica, Arial, sans-serif;
+  font: normal 20px Avenir, "Nunito Sans", Helvetica, Arial, sans-serif;
+  padding: 135px 0 0 0;
+  text-align: center;
 }
 
 header {
   box-sizing: border-box;
-  margin: 130px 0 25px 0;
-  text-align: center;
+  margin: 0 0 25px 0;
   width: 100%;
 }
 
@@ -18,14 +19,22 @@ header h1 {
   padding: 0 0 125px 0;
 }
 
-header nav a {
-  color: #cacaca;
+nav {
   font-size: 26px;
+  text-transform: uppercase;
+}
+
+nav li {
+  display: inline;
   padding: 0 44px;
+}
+
+nav a {
+  color: #cacaca;
   text-decoration: none;
 }
 
-header nav a.active {
+nav a.active {
   color: #6db9ff;
   font-weight: 800; 
 }
@@ -34,27 +43,48 @@ main {
   background: white;
   box-sizing: border-box;
   margin: 25px 0 0 0;
-  padding: 120px 190px 0 190px;
-  text-align: center;
+  padding: 120px 0 0 0;
   width: 100%;
+}
+
+.column {
+  margin: 0 auto;
+  width: 1000px;
 }
 
 article {
   padding: 0 0 70px 0;
 }
 
-main h2 {
-  font-size: 36px;
+#projects figure {
+  padding: 0 0 45px 0;
+}
+
+#projects img {
+  display: block;
+}
+
+article p {
   font-weight: 600;
+  padding: 0 110px;
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 800;
   padding: 0 0 35px 0;
 }
 
-main h2::before, main h2::after {
+h2::before,
+h2::after {
   content: "\2022";
+  display: inline-block;
+  font-size: 28px;
   padding: 0 25px;
+  vertical-align: 5px;
 }
 
-main h3 {
+h3 {
   color: #3e59b2;
   font-size: 24px;
   font-weight: 800;
@@ -64,12 +94,75 @@ main h3 {
 footer {
   background: #e7e7e7;
   box-sizing: border-box;
-  display: flex;
+  color: #b1b1b1;
   height: 300px;
-  justify-content: center;
+  padding: 74px 0;
   width: 100%;
 }
 
-footer a {
-  padding: 30px 60px;
+footer p {
+  padding: 0 0 35px 0;
+}
+
+footer li {
+  display: inline-block;
+  padding: 0 60px;
+}
+
+footer li a {
+  display: block;
+  height: 46px;
+  overflow: hidden;
+  text-indent: -9999px;
+  width: 46px;
+}
+
+.social-media {
+  background-image: url("images/icons_social-media.png");
+  background-repeat: no-repeat;
+}
+
+.twitter {
+  background-position: 0 0;
+}
+
+.facebook {
+  background-position: 0 -46px;
+}
+
+.email {
+  background-position: 0 -92px;
+}
+
+.instagram {
+  background-position: 0 -138px;
+}
+
+#team {
+  padding: 125px 0 215px 0;
+}
+
+#team p {
+  font-weight: 600;
+  padding: 0 120px;
+}
+
+#team ul {
+  padding: 125px 0 0 0;
+}
+
+#team li {
+  display: inline-block;
+  font-size: 24px;
+  padding: 0 30px;
+}
+
+#team li a{
+  color: #3e59b2;
+  text-decoration: none;
+}
+
+#team img {
+  display: block;
+  padding: 0 0 30px 0;
 }
