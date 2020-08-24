@@ -1,11 +1,20 @@
-function times(number1, number2) {
-  let result = number1 * number2;
-  console.log(result);
-  return result;
+function factorial(number) {
+  /*let accum = 1;
+  for (let count = number; count > 0; count -= 1) {
+    accum *= count;
+  }
+  return accum
+  */
+
+ return (number <= 1) ? 1 : number * factorial(number - 1);
 }
 
-let oneFactorial = times(1, 1);
-let twoFactorial = times(2, oneFactorial);
-let threeFactorial = times(3, twoFactorial);
-let fourFactorial = times(4, threeFactorial);
-let fiveFactorial = times(5, fourFactorial);
+console.log(factorial(0));     // => 1
+console.log(factorial(1));     // => 1
+console.log(factorial(2));     // => 2
+console.log(factorial(3));     // => 6
+console.log(factorial(4));     // => 24
+console.log(factorial(5));     // => 120
+console.log(factorial(6));     // => 720
+console.log(factorial(7));     // => 5040
+console.log(factorial(8));     // => 40320
