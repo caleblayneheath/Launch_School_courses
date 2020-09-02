@@ -17,16 +17,16 @@ function rot13(string) {
   // return letter corresponding to code
 
   function isLetter(char) {
-    const regex = /[A-Za-z]/
-    return regex.test(char);
+    const REGEX = /[A-Za-z]/;
+    return REGEX.test(char);
   }
 
   function rotateChar(char) {
     const OFFSET = 13;
     let charCode = char.charCodeAt(0);
 
-    const regex = /[a-m]/i;
-    if (regex.test(char)) {
+    const REGEX = /[a-m]/i;
+    if (REGEX.test(char)) {
       charCode += OFFSET;
     } else {
       charCode -= OFFSET;
