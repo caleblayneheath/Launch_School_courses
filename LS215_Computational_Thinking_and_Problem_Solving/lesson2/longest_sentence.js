@@ -43,7 +43,7 @@ function longestSentence(text) {
     // break sentences into words and count words
     // sort by word count
   // output longest sentence and word count
-  const SENTENCE_REGEX = /\w[^.!?]+[.!?]/g;
+  const SENTENCE_REGEX = /\w[^.!?]*[.!?]/g;
   let sentences = text.match(SENTENCE_REGEX);
   
   let sentenceInfo = sentences.map(string => {
