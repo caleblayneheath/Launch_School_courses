@@ -21,20 +21,22 @@ function createStudent(name, year) {
       if yes, append note to current note
       if no, course[note] = note;
       */
-      let index = this.getCourseIndex(code);
+//       let index = this.getCourseIndex(code);
 
-      if (index === -1) return;
+//       if (index === -1) return;
 
-      let course = this.getCourse(index);
+//       let course = this.getCourse(index);
+      let course = this.getCourse(code);
       
       course['note'] ? course['note'] += ('; ' + note) : course['note'] = note;
     },
     updateNote(code, note) {
-      let index = this.getCourseIndex(code);
+//       let index = this.getCourseIndex(code);
 
-      if (index === -1) return;
+//       if (index === -1) return;
 
-      let course = this.getCourse(index);
+//       let course = this.getCourse(index);
+      let course = this.getCourse(code);
       if (course['note']) course['note'] = note;
     },
     viewNotes() {
@@ -52,8 +54,11 @@ function createStudent(name, year) {
       });
       return index;
     },
-    getCourse(index) {
-      return this.courses[index];
+//     getCourse(index) {
+//       return this.courses[index];
+//     },
+    getCourse(courseCode) {
+        return this.courses.filter(({code}) => code === courseCode)[0];
     },
   };
 }
